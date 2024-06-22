@@ -79,11 +79,11 @@ export default function IndexNavbar() {
       <Container>
         <div className="navbar-translate">
           <NavbarBrand to="/" tag={Link} id="navbar-brand">
-            <span>BLK• </span>
-            Design System React
+            <span>StrandSmart• </span>
+            Thrive Together
           </NavbarBrand>
           <UncontrolledTooltip placement="bottom" target="navbar-brand">
-            Designed and Coded by Creative Tim
+            Rip through Trichotillomania
           </UncontrolledTooltip>
           <button
             aria-expanded={collapseOpen}
@@ -106,7 +106,7 @@ export default function IndexNavbar() {
             <Row>
               <Col className="collapse-brand" xs="6">
                 <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                  BLK•React
+                  StrandSmart
                 </a>
               </Col>
               <Col className="collapse-close text-right" xs="6">
@@ -124,7 +124,7 @@ export default function IndexNavbar() {
             <NavItem className="p-0">
               <NavLink
                 data-placement="bottom"
-                href="https://twitter.com/CreativeTim"
+                href="https://twitter.com/StrandSmart"
                 rel="noopener noreferrer"
                 target="_blank"
                 title="Follow us on Twitter"
@@ -136,7 +136,7 @@ export default function IndexNavbar() {
             <NavItem className="p-0">
               <NavLink
                 data-placement="bottom"
-                href="https://www.facebook.com/CreativeTim"
+                href="https://www.facebook.com/StrandSmart"
                 rel="noopener noreferrer"
                 target="_blank"
                 title="Like us on Facebook"
@@ -148,7 +148,7 @@ export default function IndexNavbar() {
             <NavItem className="p-0">
               <NavLink
                 data-placement="bottom"
-                href="https://www.instagram.com/CreativeTimOfficial"
+                href="https://www.instagram.com/StrandSmart"
                 rel="noopener noreferrer"
                 target="_blank"
                 title="Follow us on Instagram"
