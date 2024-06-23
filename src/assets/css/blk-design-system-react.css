@@ -4104,8 +4104,9 @@ input[type="button"].btn-block {
   .custom-control-input:indeterminate
   ~ .custom-control-label::before {
   border-color: #e14eca;
+
+
   background-color: #e14eca;
-  box-shadow: ;
 }
 
 .custom-checkbox
@@ -24119,5 +24120,10 @@ td.rdtYear:hover {
 .blockquote.blockquote-info small {
   color: #1d8cf8;
 }
+.icon-info {
+  font-size: 16px; /* Font size */
+  margin-right: 10px; /* Margin to the right */
 
+
+}
 /*# sourceMappingURL=blk-design-system-react.css.map */
