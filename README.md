@@ -1,6 +1,6 @@
 # [StrandSmart](https://www.strandsmart.com) 
 
-![Website image](https://github.com/[D1gits0]/[StrandSmart]/blob/[branch]/image.jpg?raw=true)
+![Website Image](https://github.com/D1gits0/StrandSmart/assets/156550005/ed92de10-f0a9-40fb-a5ef-9b52081d4ce5)
 
 **[Blk• Design System React](http://demos.creative-tim.com/blk-design-system-react/)** is a responsive Bootstrap 4 kit, developed using [React](https://reactjs.org/), [Reactstrap](https://reactstrap.github.io/) and [create-react-app](https://facebook.github.io/create-react-app/), and it is provided for free by Creative Tim. It is a beautiful cross-platform UI kit featuring over 70 elements and 3 templates.
 
