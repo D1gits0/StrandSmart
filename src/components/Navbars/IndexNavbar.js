@@ -199,7 +199,7 @@ export default function IndexNavbar() {
                 target="_blank"
                 href="/register-page"
               >
-                <i className="tim-icons icon-spaceship" /> Sign up
+                <i class="fas fa-user-plus"></i> Sign up
               </Button>
             </NavItem>
           </Nav>
