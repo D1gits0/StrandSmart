@@ -171,23 +171,23 @@ export default function IndexNavbar() {
               </DropdownToggle>
               <DropdownMenu className="dropdown-with-icons">
                 <DropdownItem href="https://demos.creative-tim.com/blk-design-system-react/#/documentation/overview">
-                  <i className="tim-icons icon-paper" />
+                  <i class="fas fa-users"></i>
                   About
                 </DropdownItem>
                 <DropdownItem tag={Link} to="/register-page">
-                  <i className="tim-icons icon-bullet-list-67" />
+                  <i class="fas fa-folder-open"></i>
                   Resources
                 </DropdownItem>
                 <DropdownItem tag={Link} to="/landing-page">
-                  <i className="tim-icons icon-image-02" />
+                  <i class="fas fa-clipboard"></i>
                   Blog
                 </DropdownItem>
                 <DropdownItem tag={Link} to="/profile-page">
-                  <i className="fas fa-info-circle"></i>
+                  <i className="fas fa-info"></i>
                   Support
                 </DropdownItem>
                 <DropdownItem tag={Link} to="/profile-page">
-                  <i className="tim-icons icon-single-02" />
+                <i class="fas fa-user"></i>
                   Contact
                 </DropdownItem>
               </DropdownMenu>

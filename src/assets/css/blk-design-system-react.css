@@ -3500,7 +3500,7 @@ input[type="button"].btn-block {
   margin: 0.125rem 0 0;
   font-size: 0.875rem;
   color: #525f7f;
-  text-align: left;
+  text-align: center;
   list-style: none;
   background-color: #ffffff;
   background-clip: padding-box;
@@ -3508,7 +3508,14 @@ input[type="button"].btn-block {
   border-radius: 0.1428rem;
   box-shadow: 0 50px 100px rgba(50, 50, 93, 0.1),
     0 15px 35px rgba(50, 50, 93, 0.15), 0 5px 15px rgba(0, 0, 0, 0.1);
+
 }
+
+.dropdown-menu .dropdown-item {
+  width: 100%; /* Make dropdown items full width */
+  text-align: center; /* Center align text within dropdown items */
+}
+
 
 .dropdown-menu-left {
   right: auto;
@@ -24123,7 +24130,6 @@ td.rdtYear:hover {
 .icon-info {
   font-size: 16px; /* Font size */
   margin-right: 10px; /* Margin to the right */
-
 
 }
 /*# sourceMappingURL=blk-design-system-react.css.map */
