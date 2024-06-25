@@ -91,7 +91,7 @@ export default function Footer() {
               <Button
                 className="btn-icon btn-neutral btn-round btn-simple"
                 color="default"
-                href="https://twitter.com/creativetim"
+                href="https://twitter.com/StrandSmart"
                 id="tooltip622135962"
                 target="_blank"
               >
@@ -103,7 +103,7 @@ export default function Footer() {
               <Button
                 className="btn-icon btn-neutral btn-round btn-simple"
                 color="default"
-                href="https://www.facebook.com/creativetim"
+                href="https://www.facebook.com/StrandSmart"
                 id="tooltip230450801"
                 target="_blank"
               >
@@ -115,11 +115,11 @@ export default function Footer() {
               <Button
                 className="btn-icon btn-neutral btn-round btn-simple"
                 color="default"
-                href="https://dribbble.com/creativetim"
+                href="https://instagram.com/StrandSmart"
                 id="tooltip318450378"
                 target="_blank"
               >
-                <i className="fab fa-dribbble" />
+                <i className="fab fa-instagram" />
               </Button>
               <UncontrolledTooltip delay={0} target="tooltip318450378">
                 Follow us

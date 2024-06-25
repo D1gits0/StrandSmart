@@ -17,6 +17,10 @@
 */
 import React from "react";
 
+import {
+  Button,
+} from "reactstrap";
+
 // reactstrap components
 import { Container } from "reactstrap";
 
@@ -36,6 +40,16 @@ export default function PageHeader() {
           <h3 className="d-none d-sm-block">
           Your Guide To Understanding And Managing Trichotillomania Together
           </h3>
+          <Button className="btn-round" color="primary" type="button">
+              Join Us
+            </Button>
+          <Button
+              className="btn-simple btn-round"
+              color="primary"
+              type="button"
+            >
+              Learn More
+            </Button>
         </div>
       </Container>
     </div>
