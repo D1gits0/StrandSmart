@@ -1,7 +1,8 @@
 import React from "react";
-import classnames from "classnames";
+import { Link } from "react-router-dom";
+import Fade from 'react-reveal/Fade';
 // plugin that creates slider
-import Slider from "nouislider";
+
 
 // reactstrap components
 import {
@@ -19,15 +20,74 @@ export default function About() {
          className="d-flex flex-column justify-content-center align-items-center text-center"
          style={{ minHeight: "100vh" }}
       >
+        <Fade>
           <h1 className="title">About Us</h1>
+          </Fade>
+        <Fade>
           <h3>
-            <blockquote>"<strong>StrandSmart</strong> is dedicated to providing resources, support, and community for those dealing with <u>trichotillomania</u>. 
-            Our mission is to <ins>normalize</ins> the condition and offer practical guidance for managing it."</blockquote>
+            <blockquote>"<strong>StrandSmart</strong> is dedicated to providing resources, support, and community for those dealing with <em>trichotillomania</em>. 
+            Our mission is to <u>normalize</u> the condition and offer practical guidance for managing it."</blockquote>
   </h3>
+  </Fade>
         <Row>
           <Col>
           <Button className="btn-round" color="primary" type="button">
               Read Our Story
+            </Button>
+          </Col>
+        </Row> 
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <Row>
+        <h1 classname="title">Resources</h1>
+          <h3>
+          Discover a wealth of information designed to help you understand and manage trichotillomania.
+           Our curated articles, guides, and personal stories provide practical tips, expert advice, and emotional support to assist you on your journey.
+            Dive into our resources to learn more about the condition, explore effective coping strategies, and connect with others who share similar experiences.
+          </h3>
+        </Row>
+        <br/>
+        <br/>
+        <br/>
+        <Row>
+          <Col sm="6">
+            <Link to="landing-page">
+              <img
+                alt="..."
+                className="img-raised"
+                src={require("assets/img/landing-page.png")}
+              />
+            </Link>
+            
+            <Button
+              className="btn-simple btn-round"
+              color="primary"
+              to="landing-page"
+              tag={Link}
+            >
+    
+              View Landing Page
+            </Button>
+          </Col>
+          <Col sm="6">
+            <Link to="profile-page">
+              <img
+                alt="..."
+                className="img-raised"
+                src={require("assets/img/profile-page.png")}
+              />
+            </Link>
+            <Button
+              className="btn-simple btn-round"
+              color="primary"
+              to="profile-page"
+              tag={Link}
+            >
+              View Profile Page
             </Button>
           </Col>
         </Row>
