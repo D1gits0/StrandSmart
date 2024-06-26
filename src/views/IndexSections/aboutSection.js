@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Fade from 'react-reveal/Fade';
+import LightSpeed from 'react-reveal/Fade';
+import { motion } from "framer-motion";
 // plugin that creates slider
 
 
@@ -20,9 +22,9 @@ export default function About() {
          className="d-flex flex-column justify-content-center align-items-center text-center"
          style={{ minHeight: "100vh" }}
       >
-        <Fade>
+        <LightSpeed>
           <h1 className="title">About Us</h1>
-          </Fade>
+          </LightSpeed>
         <Fade>
           <h3>
             <blockquote>"<strong>StrandSmart</strong> is dedicated to providing resources, support, and community for those dealing with <em>trichotillomania</em>. 
@@ -31,9 +33,15 @@ export default function About() {
   </Fade>
         <Row>
           <Col>
-          <Button className="btn-round" color="primary" type="button">
-              Read Our Story
-            </Button>
+        <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 4, delay: 0.5 }}
+              >
+                <Button className="btn-round" color="primary" type="button">
+                  Read Our Story
+                </Button>
+              </motion.div>
           </Col>
         </Row> 
         <br />
@@ -42,18 +50,37 @@ export default function About() {
         <br />
         <br />
         <br />
+          <h1 classname="title">
+          <LightSpeed>
+          Resources
+          </LightSpeed>
+          </h1>
+        <Row/>
         <Row>
-        <h1 classname="title">
-        <Fade>
-        Resources
-        </Fade>
-        </h1>
+          <Col>
+          </Col>
+          <Col>
           <h4 style={{ textAlign: "left" }}>
-          Discover a wealth of information designed to help you understand
-          <br/>
-          and manage trichotillomania. Our curated articles, guides, and personal stories provide practical tips, expert advice, and emotional support to assist you on your journey.
-            Dive into our resources to learn more about the condition, explore effective coping strategies, and connect with others who share similar experiences.
+            <LightSpeed>
+
+          Discover information to help you understand and manage trichotillomania. Our articles, guides, and stories offer practical tips, expert advice, and support. Learn about the condition, explore coping strategies, and connect with others.
+          </LightSpeed>
           </h4>
+          </Col>
+          <Col className="mt-5 mt-sm-0" sm="3" xs="6">
+              <motion.img
+                alt="..."
+                className="img-fluid rounded-circle shadow-lg"
+                src={require("assets/img/mike.jpg")}
+                style={{ width: "150px" }}
+                initial={{ opacity: 0, scale: 0.7 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 4 }}
+              />
+            </Col>
+            <Col>
+
+            </Col>
         </Row>
         <br/>
         <br/>
