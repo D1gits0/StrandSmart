@@ -16,6 +16,7 @@
 
 */
 import React from "react";
+import Bounce from 'react-reveal/Fade';
 
 import {
   Button,
@@ -36,10 +37,17 @@ export default function PageHeader() {
       <div className="squares square7" />
       <Container>
         <div className="content-center brand">
-          <h1 className="h1-seo">StrandSmart</h1>
+          <h1 className="h1-seo">
+            <Bounce>
+            StrandSmart
+            </Bounce>
+            </h1>
           <h3 className="d-none d-sm-block">
+            <Bounce>
           Your Guide To Understanding And Managing Trichotillomania Together
+          </Bounce>
           </h3>
+          
           <Button className="btn-round" color="primary" type="button">
               Join Us
             </Button>

@@ -43,12 +43,17 @@ export default function About() {
         <br />
         <br />
         <Row>
-        <h1 classname="title">Resources</h1>
-          <h3>
-          Discover a wealth of information designed to help you understand and manage trichotillomania.
-           Our curated articles, guides, and personal stories provide practical tips, expert advice, and emotional support to assist you on your journey.
+        <h1 classname="title">
+        <Fade>
+        Resources
+        </Fade>
+        </h1>
+          <h4 style={{ textAlign: "left" }}>
+          Discover a wealth of information designed to help you understand
+          <br/>
+          and manage trichotillomania. Our curated articles, guides, and personal stories provide practical tips, expert advice, and emotional support to assist you on your journey.
             Dive into our resources to learn more about the condition, explore effective coping strategies, and connect with others who share similar experiences.
-          </h3>
+          </h4>
         </Row>
         <br/>
         <br/>
@@ -59,7 +64,7 @@ export default function About() {
               <img
                 alt="..."
                 className="img-raised"
-                src={require("assets/img/landing-page.png")}
+                src={require("assets/img/strandsmartlogo.png")}
               />
             </Link>
             
@@ -70,7 +75,7 @@ export default function About() {
               tag={Link}
             >
     
-              View Landing Page
+              See Articles
             </Button>
           </Col>
           <Col sm="6">
@@ -78,7 +83,7 @@ export default function About() {
               <img
                 alt="..."
                 className="img-raised"
-                src={require("assets/img/profile-page.png")}
+                src={require("assets/img/strandsmartlogo.png")}
               />
             </Link>
             <Button
@@ -87,7 +92,7 @@ export default function About() {
               to="profile-page"
               tag={Link}
             >
-              View Profile Page
+              See Blog
             </Button>
           </Col>
         </Row>
