@@ -17,7 +17,7 @@ import {
 export default function More() {
   return (
     <div className="section section-basic" id="basic-elements">
-      <img alt="..." className="path" src={require("assets/img/path1.png")} />
+      <img alt="..." className="path" src={require("assets/img/path2.png")} />
       <Container
          className="d-flex flex-column justify-content-center align-items-center text-center"
          style={{ minHeight: "100vh" }}
