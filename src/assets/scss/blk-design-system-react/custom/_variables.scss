@@ -991,3 +991,25 @@ $footer-link-color: $gray-600 !default;
 $footer-link-hover-color: $gray-700 !default;
 $footer-heading-color: $gray-600 !default;
 $footer-heading-font-size: $font-size-sm !default;
+
+$orange: #fb6340 !default;
+
+.custom-btn-orange {
+  background-color: $orange;
+  border-color: $orange;
+  color: #fff; // Assuming you want white text
+  
+  &:hover,
+  &:focus,
+  &:active {
+    background-color: darken($orange, 10%);
+    border-color: darken($orange, 10%);
+    color: #fff; // Ensure text stays white on hover
+  }
+
+  &:active {
+    background-color: lighten($orange, 10%);
+    border-color: lighten($orange, 10%);
+    color: #fff; // Ensure text stays white when active
+  }
+}

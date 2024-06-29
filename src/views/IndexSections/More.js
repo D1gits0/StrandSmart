@@ -27,8 +27,8 @@ export default function More() {
           </LightSpeed>
         <Fade>
           <h3>
-            <blockquote>"<strong>StrandSmart</strong> is dedicated to providing resources, support, and community for those dealing with <em>trichotillomania</em>. 
-            Our mission is to <u>normalize</u> the condition and offer practical guidance for managing it."</blockquote>
+            <blockquote>"Connect with others who understand your experience. 
+              Share your story, ask questions, and find support in our safe and welcoming community."</blockquote>
   </h3>
   </Fade>
         <Row>
@@ -38,8 +38,8 @@ export default function More() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 4, delay: 0.5 }}
               >
-                <Button className="btn-round" color="primary" type="button">
-                  Read Our Story
+                <Button className="btn-round custom-btn-orange" type="button">
+                  Reddit
                 </Button>
               </motion.div>
           </Col>
