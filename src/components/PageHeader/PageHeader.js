@@ -57,9 +57,7 @@ export default function PageHeader() {
           </Bounce>
           </h3>
           </Col>
-          </Row>
-          <Row>
-          <Col>
+          </Row>          
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -71,8 +69,7 @@ export default function PageHeader() {
           Join Us
         </Button>
       </motion.div>
-      </Col>
-      <Col>
+     
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -84,8 +81,7 @@ export default function PageHeader() {
           Learn More
         </Button>
       </motion.div>
-    </Col>
-            </Row>
+  
         </div>
       </Container>
     </div>

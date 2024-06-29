@@ -25,6 +25,7 @@ import Footer from "components/Footer/Footer.js";
 // sections for this page/view
 import About from "./IndexSections/aboutSection";
 import Basics from "views/IndexSections/Basics.js";
+import More from "views/IndexSections/More.js";
 import Navbars from "views/IndexSections/Navbars.js";
 import Tabs from "views/IndexSections/Tabs.js";
 import Pagination from "views/IndexSections/Pagination.js";
@@ -51,6 +52,7 @@ export default function Index() {
         <PageHeader />
         <div className="main">
           <About />
+          <More />
           <Navbars />
           <Tabs />
           <Pagination />

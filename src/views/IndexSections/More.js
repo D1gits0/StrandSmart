@@ -14,7 +14,7 @@ import {
   Col,
 } from "reactstrap";
 
-export default function About() {
+export default function More() {
   return (
     <div className="section section-basic" id="basic-elements">
       <img alt="..." className="path" src={require("assets/img/path1.png")} />
@@ -23,7 +23,7 @@ export default function About() {
          style={{ minHeight: "100vh" }}
       >
         <LightSpeed>
-          <h1 className="title">About Us</h1>
+          <h1 className="title"> Community</h1>
           </LightSpeed>
         <Fade>
           <h3>
