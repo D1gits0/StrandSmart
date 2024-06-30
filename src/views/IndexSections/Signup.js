@@ -73,17 +73,6 @@ export default function Signup() {
             Stay connected and informed on managing trichotillomania.
             </LightSpeed>
             </p>
-            <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 50 }}
-      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-      transition={{ duration: 3.5, delay: 0.5 }}
-      className="btn-round"
-    >
-      <Button color="primary">
-        Register Page
-      </Button>
-    </motion.div>
           </Col>
           <Col className="mb-lg-auto" lg="6">
             <Card className="card-register">
@@ -93,7 +82,7 @@ export default function Signup() {
                   src={require("assets/img/green-square-background.jpg")}
                   style={{ marginTop: "-25px" }} // Adjust the value as needed
                 />
-                <CardTitle tag="h4">Register</CardTitle>
+                <CardTitle tag="h4"> Register</CardTitle>
               </CardHeader>
               <CardBody>
                 <Form className="form">
@@ -129,23 +118,6 @@ export default function Signup() {
                       type="text"
                       onFocus={(e) => setEmailFocus(true)}
                       onBlur={(e) => setEmailFocus(false)}
-                    />
-                  </InputGroup>
-                  <InputGroup
-                    className={classnames({
-                      "input-group-focus": passwordFocus,
-                    })}
-                  >
-                    <InputGroupAddon addonType="prepend">
-                      <InputGroupText>
-                        <i className="tim-icons icon-lock-circle" />
-                      </InputGroupText>
-                    </InputGroupAddon>
-                    <Input
-                      placeholder="Password"
-                      type="text"
-                      onFocus={(e) => setPasswordFocus(true)}
-                      onBlur={(e) => setPasswordFocus(false)}
                     />
                   </InputGroup>
                   <FormGroup check className="text-left">

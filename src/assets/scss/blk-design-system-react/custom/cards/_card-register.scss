@@ -2,6 +2,8 @@
   overflow: hidden;
   text-align: left;
   z-index: 2;
+  background-color: $beige;
+  
 
   .card-header img {
     position: absolute;
@@ -44,7 +46,7 @@
         position: relative;
         font-size: 5em;
         font-weight: 900;
-        color: $black;
+        color: $beige;
         text-transform: lowercase;
         margin-left: -5px;
         z-index: 1;
@@ -56,6 +58,7 @@
       left: 0;
       top: -15%;
       width: 70%;
+      
     }
 
     .social-line {
