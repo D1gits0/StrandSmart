@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import Fade from 'react-reveal/Fade';
 import LightSpeed from 'react-reveal/Fade';
 import { motion } from "framer-motion";
+import { useInView } from 'react-intersection-observer';
+
 // plugin that creates slider
 
 
@@ -15,6 +17,11 @@ import {
 } from "reactstrap";
 
 export default function More() {
+    const { ref, inView } = useInView({
+      triggerOnce: true, // Animation triggers only once when in view
+      threshold: 0.1, // Adjust the threshold as needed
+});
+
   return (
     <div className="section section-basic" id="basic-elements">
       <img alt="..." className="path" src={require("assets/img/path2.png")} />
@@ -34,6 +41,7 @@ export default function More() {
         <Row>
           <Col>
         <motion.div
+                ref ={ref}
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 4, delay: 0.5 }}
@@ -55,105 +63,29 @@ export default function More() {
         <br />
           <h1 classname="title">
           <LightSpeed>
-          Resources
+          Get Involved
           </LightSpeed>
           </h1>
         <Row/>
-        <Row>
-          <Col>
-          </Col>
-          <Col>
-          <h4 style={{ textAlign: "left" }}>
-            <LightSpeed>
-
-          Discover information to help you understand and manage trichotillomania. Our articles, guides, and stories offer practical tips, expert advice, and support. Learn about the condition, explore coping strategies, and connect with others.
-          </LightSpeed>
-          </h4>
-          </Col>
-          <Col className="mt-5 mt-sm-0" sm="3" xs="6">
-              <motion.img
-                alt="..."
-                className="img-fluid rounded-circle shadow-lg"
-                src={require("assets/img/openhands.png")}
-                style={{ width: "150px" }}
-                initial={{ opacity: 0, scale: 0.7 }}
-                animate={{ opacity: 1, scale: 1.2 }}
-                transition={{ duration: 3 }}
-              />
-            </Col>
-            <Col>
-
-            </Col>
-        </Row>
-        <br/>
-        <br/>
-        <br/>
-        <Row>
-        <Col sm="6">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 3 }}
-          whileHover={{ scale: 0.9 }}
+      <Row>
+        <h3>
+         <LightSpeed>
+         Join us in raising awareness about trichotillomania.
+          Participate in campaigns, share our resources, and help make a difference.
+         </LightSpeed>
+         </h3>
+      </Row>
+      <Row>
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 4, delay: 0.5 }}
         >
-          <Link to="landing-page">
-            <img
-              alt="..."
-              className="img-raised"
-              src={require("assets/img/strandsmartlogo.png")}
-            />
-          </Link>
+        <Button className="btn-round" color="primary" type="button">
+          Learn How 
+        </Button>
         </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 3, delay: 0.5 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <Button
-            className="btn-simple btn-round"
-            color="primary"
-            to="landing-page"
-            tag={Link}
-          >
-            See Articles
-          </Button>
-        </motion.div>
-      </Col>
-      <Col sm="6">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 3 }}
-          whileHover={{ scale: 0.9 }}
-        >
-          <Link to="profile-page">
-            <img
-              alt="..."
-              className="img-raised"
-              src={require("assets/img/strandsmartlogo.png")}
-            />
-          </Link>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 3, delay: 0.5 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <Button
-            className="btn-simple btn-round"
-            color="primary"
-            to="profile-page"
-            tag={Link}
-          >
-            See Blog
-          </Button>
-        </motion.div>
-      </Col>
-        </Row>
+      </Row>
         <br />
       </Container>
     </div>

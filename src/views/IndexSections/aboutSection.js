@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Fade from 'react-reveal/Fade';
 import LightSpeed from 'react-reveal/Fade';
 import { motion } from "framer-motion";
+import { useInView } from 'react-intersection-observer';
 // plugin that creates slider
 
 
@@ -15,6 +16,27 @@ import {
 } from "reactstrap";
 
 export default function About() {
+  const { ref, inView } = useInView({
+    triggerOnce: true, // Animation triggers only once when in view
+    threshold: 0.1, // Adjust the threshold as needed
+  });
+  const { ref: firstImageRef, inView: firstImageInView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1
+  });
+  const { ref: firstButtonRef, inView: firstButtonInView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1
+  });
+  const { ref: secondImageRef, inView: secondImageInView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1
+  });
+  const { ref: secondButtonRef, inView: secondButtonInView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1
+  });
+
   return (
     <div className="section section-basic" id="basic-elements">
       <img alt="..." className="path" src={require("assets/img/path1.png")} />
@@ -75,7 +97,7 @@ export default function About() {
                 style={{ width: "150px" }}
                 initial={{ opacity: 0, scale: 0.7 }}
                 animate={{ opacity: 1, scale: 1.2 }}
-                transition={{ duration: 3 }}
+                transition={{ duration: 4 }}
               />
             </Col>
             <Col>
@@ -88,6 +110,7 @@ export default function About() {
         <Row>
         <Col sm="6">
         <motion.div
+          ref={firstImageRef}
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 3 }}
@@ -102,6 +125,7 @@ export default function About() {
           </Link>
         </motion.div>
         <motion.div
+          ref={firstButtonRef}
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 3, delay: 0.5 }}
@@ -120,6 +144,7 @@ export default function About() {
       </Col>
       <Col sm="6">
         <motion.div
+          ref={secondImageRef}
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 3 }}
@@ -134,6 +159,7 @@ export default function About() {
           </Link>
         </motion.div>
         <motion.div
+          ref={secondButtonRef}
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 3, delay: 0.5 }}
