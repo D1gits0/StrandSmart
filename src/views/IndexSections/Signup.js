@@ -18,6 +18,10 @@
 import React from "react";
 import classnames from "classnames";
 import { Link } from "react-router-dom";
+import { motion } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
+import LightSpeed from 'react-reveal/Fade';
+
 // reactstrap components
 import {
   Button,
@@ -43,6 +47,12 @@ export default function Signup() {
   const [fullNameFocus, setFullNameFocus] = React.useState(false);
   const [emailFocus, setEmailFocus] = React.useState(false);
   const [passwordFocus, setPasswordFocus] = React.useState(false);
+
+  const { ref, inView } = useInView({
+    triggerOnce: true, // Animation triggers only once when in view
+    threshold: 0.1, // Adjust the threshold as needed
+  });
+
   return (
     <div className="section section-signup">
       <Container>
@@ -53,28 +63,35 @@ export default function Signup() {
         <Row className="row-grid justify-content-between align-items-center">
           <Col lg="6">
             <h3 className="display-3 text-white">
-              A beautiful Black Design{" "}
-              <span className="text-white">completed with examples</span>
+              <LightSpeed>
+              Sign Up
+              </LightSpeed>
             </h3>
             <p className="text-white mb-3">
-              The Design System comes with four pre-built pages to help you get
-              started faster. You can change the text and images and you're good
-              to go. More importantly, looking at them will give you a picture
-              of what you can built with this powerful Bootstrap 4 Design
-              System.
+            <LightSpeed>
+            Sign up to receive practical tips, expert advice, and the latest updates straight to your inbox. 
+            Stay connected and informed on managing trichotillomania.
+            </LightSpeed>
             </p>
-            <div className="btn-wrapper">
-              <Button color="primary" to="register-page" tag={Link}>
-                Register Page
-              </Button>
-            </div>
+            <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 50 }}
+      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+      transition={{ duration: 3.5, delay: 0.5 }}
+      className="btn-round"
+    >
+      <Button color="primary">
+        Register Page
+      </Button>
+    </motion.div>
           </Col>
           <Col className="mb-lg-auto" lg="6">
             <Card className="card-register">
               <CardHeader>
                 <CardImg
                   alt="..."
-                  src={require("assets/img/square-purple-1.png")}
+                  src={require("assets/img/green-square-background.jpg")}
+                  style={{ marginTop: "-25px" }} // Adjust the value as needed
                 />
                 <CardTitle tag="h4">Register</CardTitle>
               </CardHeader>

@@ -53,16 +53,8 @@ export default function Index() {
         <div className="main">
           <About />
           <More />
-          <Navbars />
-          <Tabs />
-          <Pagination />
-          <Notifications />
-          <Typography />
-          <JavaScript />
-          <NucleoIcons />
           <Signup />
-          <Examples />
-          <Download />
+
         </div>
         <Footer />
       </div>
