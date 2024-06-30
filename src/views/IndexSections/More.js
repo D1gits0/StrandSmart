@@ -27,8 +27,8 @@ export default function More() {
           </LightSpeed>
         <Fade>
           <h3>
-            <blockquote>"Connect with others who understand your experience. 
-              Share your story, ask questions, and find support in our safe and welcoming community."</blockquote>
+            <blockquote>Connect with others who understand your experience. 
+              Share your story, ask questions, and find support in our safe and welcoming community.</blockquote>
   </h3>
   </Fade>
         <Row>
@@ -38,10 +38,12 @@ export default function More() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 4, delay: 0.5 }}
               >
+                 <a href="https://www.reddit.com/r/trichotillomania" target="blank" rel="nooopener noreferrer">
                 <Button className="btn-round btn-orange" type="button">
                 <i className="fab fa-reddit" style={{ marginRight: "5px"}}/> 
                 Join Us on Reddit 
                   </Button>
+                  </a>
               </motion.div>
           </Col>
         </Row> 
