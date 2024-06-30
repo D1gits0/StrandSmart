@@ -38,9 +38,10 @@ export default function More() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 4, delay: 0.5 }}
               >
-                <Button className="btn-round custom-btn-orange" type="button">
-                  Reddit
-                </Button>
+                <Button className="btn-round btn-orange" type="button">
+                <i className="fab fa-reddit" style={{ marginRight: "5px"}}/> 
+                Join Us on Reddit 
+                  </Button>
               </motion.div>
           </Col>
         </Row> 

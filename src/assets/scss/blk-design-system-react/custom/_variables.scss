@@ -46,11 +46,12 @@ $indigo:  #5603ad !default;
 $purple:  #8965e0 !default;
 $pink:    #f3a4b5 !default;
 $red:     #f5365c !default;
-$orange:  #fb6340 !default;
-$yellow:  #ffd600 !default;
+$orange:  #FF4500 !default;
+$yellow:  #030303 !default;
 $green:   #2dce89 !default;
 $teal:    #11cdef !default;
 $cyan:    #2bffc6 !default;
+$orange-states: #fb6340 !default;
 
 $line-height-lg:              1.625rem !default;
 $line-height-sm:              1.5 !default;
@@ -991,23 +992,3 @@ $footer-link-color: $gray-600 !default;
 $footer-link-hover-color: $gray-700 !default;
 $footer-heading-color: $gray-600 !default;
 $footer-heading-font-size: $font-size-sm !default;
-
-.custom-btn-orange {
-  background-color: $orange;
-  border-color: $orange;
-  color: #fff; // Assuming you want white text
-  
-  &:hover,
-  &:focus,
-  &:active {
-    background-color: darken($orange, 10%);
-    border-color: darken($orange, 10%);
-    color: #fff; // Ensure text stays white on hover
-  }
-
-  &:active {
-    background-color: lighten($orange, 10%);
-    border-color: lighten($orange, 10%);
-    color: #fff; // Ensure text stays white when active
-  }
-}

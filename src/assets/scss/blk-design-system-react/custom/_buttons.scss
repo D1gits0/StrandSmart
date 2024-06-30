@@ -124,6 +124,8 @@
               }
 .btn-neutral { @include btn-styles($white, $white); }
 
+.btn-orange { @include btn-styles($orange, $orange-states); }
+
 .btn{
      &:disabled,
      &[disabled],
