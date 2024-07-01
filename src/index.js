@@ -26,6 +26,7 @@ import "assets/scss/blk-design-system-react.scss";
 import "assets/demo/demo.css";
 
 import Index from "views/Index.js";
+import AboutPage from "views/examples/AboutPage.js"
 import LandingPage from "views/examples/LandingPage.js";
 import RegisterPage from "views/examples/RegisterPage.js";
 import ProfilePage from "views/examples/ProfilePage.js";
@@ -39,6 +40,7 @@ root.render(
       <Route path="/landing-page" element={<LandingPage />} />
       <Route path="/register-page" element={<RegisterPage />} />
       <Route path="/profile-page" element={<ProfilePage />} />
+      <Route path="/about-page" element={<AboutPage />} />
       <Route path="*" element={<Navigate to="/components" replace />} />
     </Routes>
   </BrowserRouter>

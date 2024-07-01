@@ -170,7 +170,7 @@ export default function IndexNavbar() {
                 Explore
               </DropdownToggle>
               <DropdownMenu className="dropdown-with-icons">
-                <DropdownItem href="https://demos.creative-tim.com/blk-design-system-react/#/documentation/overview">
+                <DropdownItem tag={Link} to="/about-page">
                   <i class="fas fa-users"></i>
                   About
                 </DropdownItem>
