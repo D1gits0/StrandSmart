@@ -119,17 +119,7 @@ export default function Signup() {
                       onFocus={(e) => setEmailFocus(true)}
                       onBlur={(e) => setEmailFocus(false)}
                     />
-                  </InputGroup>
-                  <FormGroup check className="text-left">
-                    <Label check>
-                      <Input type="checkbox" />
-                      <span className="form-check-sign" />I agree to the{" "}
-                      <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                        terms and conditions
-                      </a>
-                      .
-                    </Label>
-                  </FormGroup>
+                  </InputGroup> 
                 </Form>
               </CardBody>
               <CardFooter>
