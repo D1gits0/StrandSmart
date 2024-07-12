@@ -17,6 +17,8 @@
 */
 import React from "react";
 import classnames from "classnames";
+import pfpstrsmart from 'assets/img/pfpstrsmart.png';
+
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from "perfect-scrollbar";
 // reactstrap components
@@ -104,19 +106,49 @@ export default function AboutPage() {
             className="path"
             src={require("assets/img/path4.png")}
           />
-          <Container className="align-items-center">
+          <Container className="text-center">
+          <Row className="justify-content-between align-items-center">
+        <Col>
+        <div style={{ fontSize: '3rem' }}>About StrandSmart</div>
+        <div style={{ fontSize: '1.5rem', marginTop: '10px', color: '#ffff' }}>
+        Support and Community for Trichotillomania          </div>
+        <p style={{ fontSize: '1rem', marginTop: '15px', color: '#ffff' }}>
+        StrandSmart is dedicated to helping individuals navigate their journey with trichotillomania. 
+        We provide resources, support, and a community where you can find understanding and encouragement.
+          </p>
+        </Col>
+      </Row>
+          </Container>
+          <Container className="align-items-center" style={{ padding: '60px 20px' }}>
             <Row>
               <Col lg="6" md="6">
                 <h1 className="profile-title text-left">Aadi Garg</h1>
                 <h5 className="text-on-back">01</h5>
                 <p className="profile-description">
                 I'm a high schooler based in California who has personally struggled with trichotillomania. The mental battles, misunderstandings, and social ostracization I faced inspired me to make a difference. Combining my coding skills and desire to help, I created StrandSmart as a supportive community. This website serves as an unofficial guide, offering practical tips, shared experiences, and a sense of belonging for those affected by trichotillomania.
-My goal is to foster awareness and support in this community. Even if I help just one person on their <u>journey</u> to overcoming trichotillomania, I will consider it a success.
+                My goal is to foster awareness and support in this community. Even if I help just one person on their <u>journey</u> to overcoming trichotillomania, I will consider it a success.
                 </p>
               </Col>
               <Col>
+              <div style={{ fontSize: '2.2rem', marginLeft: '100px',
+               marginTop: '40px', fontFamily: 'Poppins, sans-serif'}}>
 
+                The Creator's Story</div>
+              <img 
+              src={pfpstrsmart} 
+              alt="Profile" 
+              style={{ 
+                maxWidth: '375px', // Increase size as needed
+                height: '375px', // Set fixed height for cropping effect
+                objectFit: 'cover', // Crop the sides
+                display: 'block', // Centering
+                margin: '20px auto 0' // Centering
+            }} 
+            />
               </Col>
+            </Row>
+            <Row>
+              <break/>
             </Row>
           </Container>
         </div>
