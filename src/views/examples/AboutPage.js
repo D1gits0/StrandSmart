@@ -18,6 +18,10 @@
 import React from "react";
 import classnames from "classnames";
 import pfpstrsmart from 'assets/img/pfpstrsmart.png';
+import LightSpeed from 'react-reveal/Fade';
+import { ReactTyped } from "react-typed";
+import { useSpring, animated } from 'react-spring';
+import { useInView } from 'react-intersection-observer';
 
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from "perfect-scrollbar";
@@ -109,7 +113,21 @@ export default function AboutPage() {
           <Container className="text-center">
           <Row className="justify-content-between align-items-center">
         <Col>
-        <div style={{ fontSize: '3rem' }}>About StrandSmart</div>
+        <h1 style={{ fontSize: "6rem", fontWeight: 400, position: "relative" }}>
+          <LightSpeed>
+          <ReactTyped strings={["About StrandSmart"]} typeSpeed={300} />
+          </LightSpeed>
+          <animated.div
+            style={{
+              position: "absolute",
+              bottom: "70%",
+              left: 0,
+              height: "8px",
+              backgroundColor: "rgba(255, 0, 0, 0.9)",
+
+            }}
+          />
+        </h1>
         <div style={{ fontSize: '1.5rem', marginTop: '10px', color: '#ffff' }}>
         Support and Community for Trichotillomania          </div>
         <p style={{ fontSize: '1rem', marginTop: '15px', color: '#ffff' }}>
@@ -133,8 +151,8 @@ export default function AboutPage() {
               <div style={{ fontSize: '2.2rem', marginLeft: '100px',
                marginTop: '40px', fontFamily: 'Poppins, sans-serif'}}>
 
-                The Creator's Story</div>
-              <img 
+                <b>The Creator's Story</b></div>
+              <img
               src={pfpstrsmart} 
               alt="Profile" 
               style={{ 
