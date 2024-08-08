@@ -178,7 +178,8 @@ export default function IndexNavbar() {
                   <i class="fas fa-folder-open"></i>
                   Resources
                 </DropdownItem>
-                <DropdownItem tag={Link} to="/landing-page">
+                
+                {/* <DropdownItem tag={Link} to="/landing-page">
                   <i class="fas fa-clipboard"></i>
                   Blog
                 </DropdownItem>
@@ -189,7 +190,7 @@ export default function IndexNavbar() {
                 <DropdownItem tag={Link} to="/profile-page">
                 <i class="fas fa-user"></i>
                   Contact
-                </DropdownItem>
+                </DropdownItem> */}
               </DropdownMenu>
             </UncontrolledDropdown>
             <NavItem>

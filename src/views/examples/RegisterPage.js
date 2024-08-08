@@ -99,7 +99,8 @@ export default function RegisterPage() {
                     <CardHeader>
                       <CardImg
                         alt="..."
-                        src={require("assets/img/square-purple-1.png")}
+                        src={require("assets/img/green-square-background.jpg")}
+                        style={{ marginTop: "-25px" }}
                       />
                       <CardTitle tag="h4">Register</CardTitle>
                     </CardHeader>

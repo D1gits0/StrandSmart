@@ -46,17 +46,17 @@ export default function Footer() {
               </NavItem>
               <NavItem>
                 <NavLink to="/landing-page" tag={Link}>
-                  Landing
+                  About
                 </NavLink>
               </NavItem>
               <NavItem>
                 <NavLink to="/register-page" tag={Link}>
-                  Register
+                  Resources
                 </NavLink>
               </NavItem>
               <NavItem>
                 <NavLink to="/profile-page" tag={Link}>
-                  Profile
+                  Blog
                 </NavLink>
               </NavItem>
             </Nav>
@@ -65,12 +65,12 @@ export default function Footer() {
             <Nav>
               <NavItem>
                 <NavLink href="https://creative-tim.com/contact-us?ref=blkdsr-footer">
-                  Contact Us
+                  Support
                 </NavLink>
               </NavItem>
               <NavItem>
                 <NavLink href="https://creative-tim.com/about-us?ref=blkdsr-footer">
-                  About Us
+                  Contact Us
                 </NavLink>
               </NavItem>
               <NavItem>

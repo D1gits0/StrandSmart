@@ -55,19 +55,19 @@ import Footer from "components/Footer/Footer.js";
 
 const carouselItems = [
   {
-    src: require("assets/img/denys.jpg"),
+    src: require("assets/img/img_3115.jpg"),
     altText: "Slide 1",
-    caption: "Big City Life, United States",
+    caption: "Coming Soon",
   },
   {
-    src: require("assets/img/fabien-bazanegue.jpg"),
+    src: require("assets/img/img_3115.jpg"),
     altText: "Slide 2",
-    caption: "Somewhere Beyond, United States",
+    caption: "Coming",
   },
   {
-    src: require("assets/img/mark-finn.jpg"),
+    src: require("assets/img/img_3115.jpg"),
     altText: "Slide 3",
-    caption: "Stocks, United States",
+    caption: "Soon",
   },
 ];
 
@@ -143,8 +143,7 @@ export default function AboutPage() {
                 <h1 className="profile-title text-left">Aadi Garg</h1>
                 <h5 className="text-on-back">01</h5>
                 <p className="profile-description">
-                I'm a high schooler based in California who has personally struggled with trichotillomania. The mental battles, misunderstandings, and social ostracization I faced inspired me to make a difference. Combining my coding skills and desire to help, I created StrandSmart as a supportive community. This website serves as an unofficial guide, offering practical tips, shared experiences, and a sense of belonging for those affected by trichotillomania.
-                My goal is to foster awareness and support in this community. Even if I help just one person on their <u>journey</u> to overcoming trichotillomania, I will consider it a success.
+                Walking through trichotillomania is a journey only a few can take. Unlike other paths, the journey is filled with an invisible enemy; your mental fortitude crumbles and 
                 </p>
               </Col>
               <Col>
@@ -182,30 +181,9 @@ export default function AboutPage() {
                 <h1 className="profile-title text-left">Projects</h1>
                 <h5 className="text-on-back">02</h5>
                 <p className="profile-description text-left">
-                  An artist of considerable range, Ryan — the name taken by
-                  Melbourne-raised, Brooklyn-based Nick Murphy — writes,
-                  performs and records all of his own music, giving it a warm,
-                  intimate feel with a solid groove structure. An artist of
-                  considerable range.
+                 Coming Soon
                 </p>
-                <div className="btn-wrapper pt-3">
-                  <Button
-                    className="btn-simple"
-                    color="primary"
-                    href="#pablo"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    <i className="tim-icons icon-book-bookmark" /> Bookmark
-                  </Button>
-                  <Button
-                    className="btn-simple"
-                    color="info"
-                    href="#pablo"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    <i className="tim-icons icon-bulb-63" /> Check it!
-                  </Button>
-                </div>
+
               </Col>
             </Row>
           </Container>
@@ -225,27 +203,13 @@ export default function AboutPage() {
                         <Col md="6">
                           <FormGroup>
                             <label>Your Name</label>
-                            <Input defaultValue="Mike" type="text" />
+                            <Input defaultValue="John" type="name" />
                           </FormGroup>
                         </Col>
                         <Col md="6">
                           <FormGroup>
                             <label>Email address</label>
-                            <Input placeholder="mike@email.com" type="email" />
-                          </FormGroup>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col md="6">
-                          <FormGroup>
-                            <label>Phone</label>
-                            <Input defaultValue="001-12321345" type="text" />
-                          </FormGroup>
-                        </Col>
-                        <Col md="6">
-                          <FormGroup>
-                            <label>Company</label>
-                            <Input defaultValue="CreativeTim" type="text" />
+                            <Input placeholder="strandsmart@example.com" type="email" />
                           </FormGroup>
                         </Col>
                       </Row>
@@ -264,7 +228,7 @@ export default function AboutPage() {
                         id="tooltip341148792"
                         type="button"
                       >
-                        Send text
+                        Send Email
                       </Button>
                       <UncontrolledTooltip
                         delay={0}
@@ -280,27 +244,14 @@ export default function AboutPage() {
               <Col className="ml-auto" md="4">
                 <div className="info info-horizontal">
                   <div className="icon icon-primary">
-                    <i className="tim-icons icon-square-pin" />
-                  </div>
-                  <div className="description">
-                    <h4 className="info-title">Find us at the office</h4>
-                    <p>
-                      Bld Mihail Kogalniceanu, nr. 8, <br />
-                      7652 Bucharest, <br />
-                      Romania
-                    </p>
-                  </div>
-                </div>
-                <div className="info info-horizontal">
-                  <div className="icon icon-primary">
                     <i className="tim-icons icon-mobile" />
                   </div>
                   <div className="description">
-                    <h4 className="info-title">Give us a ring</h4>
+                    <h4 className="info-title">Email Us</h4>
                     <p>
-                      Michael Jordan <br />
-                      +40 762 321 762 <br />
-                      Mon - Fri, 8:00-22:00
+                      StrandSmart Team <br />
+                      strandsmart@example.com <br />
+                      Th - Sun, 8:00-22:00
                     </p>
                   </div>
                 </div>
