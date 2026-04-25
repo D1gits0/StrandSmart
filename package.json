@@ -1,9 +1,9 @@
 {
   "name": "blk-design-system-react",
   "version": "1.2.2",
-  "description": "React version of BLK Design System by Creative Tim",
+  "description": "React version of Strandsmart by Strandsmart",
   "main": "index.js",
-  "author": "Creative Tim",
+  "author": "Strandsmart",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -59,7 +59,7 @@
     "react-scripts": "^5.0.1",
     "react-spring": "^9.7.3",
     "react-typed": "^2.0.12",
-    "reactstrap": "8.10.0",
+    "reactstrap": "^8.10.0",
     "sass": "1.62.1",
     "web-vitals": "3.3.1",
     "webpack": "^5.92.1"
