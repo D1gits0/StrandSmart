@@ -1,13 +1,12 @@
 /**
  * src/components/UrgeTracker/UrgeTracker.js
  *
- * The core interaction widget on the Dashboard.
+ * Props:
+ *   note          — string from the VibeInput (passed down from Dashboard)
+ *   onAfterLog()  — called after a successful urge log so Dashboard can
+ *                   clear the vibe input and save a reflection
  *
- * States:
- *   idle      — shows the "Log Urge" button
- *   logging   — button is disabled, spinner shown
- *   success   — green confirmation + link to Grounding page
- *   error     — red error message with retry option
+ * States: idle | logging | success | error
  */
 
 import React, { useState } from "react";
@@ -16,21 +15,22 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button, Card, CardBody } from "reactstrap";
 import useUrgeLog from "hooks/useUrgeLog";
 
-// How long (ms) to show the success state before returning to idle
 const SUCCESS_RESET_MS = 8000;
 
-const UrgeTracker = () => {
+const UrgeTracker = ({ note = "", onAfterLog }) => {
   const { logUrge, recentLogs, logsLoading } = useUrgeLog();
-  const [status,    setStatus]    = useState("idle");   // idle | logging | success | error
-  const [errorMsg,  setErrorMsg]  = useState("");
+  const [status,   setStatus]   = useState("idle");
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleLogUrge = async () => {
     setStatus("logging");
     setErrorMsg("");
     try {
-      await logUrge();
+      // Pass the current vibe note into the Firestore document
+      await logUrge(note.trim());
       setStatus("success");
-      // Auto-reset after SUCCESS_RESET_MS so the button is available again
+      // Notify parent so it can save a reflection + clear the input
+      if (onAfterLog) onAfterLog();
       setTimeout(() => setStatus("idle"), SUCCESS_RESET_MS);
     } catch (err) {
       console.error("logUrge error:", err);
@@ -44,7 +44,7 @@ const UrgeTracker = () => {
       style={{
         borderRadius: "8px",
         boxShadow: "0 8px 32px rgba(0,0,0,0.45)",
-        marginBottom: "2rem",
+        marginBottom: "1.5rem",
         overflow: "hidden",
       }}
     >
@@ -56,8 +56,8 @@ const UrgeTracker = () => {
           Feeling an urge? Log it — awareness is the first step.
         </p>
 
-        {/* ── Main button / feedback area ── */}
         <AnimatePresence mode="wait">
+          {/* ── Idle ── */}
           {status === "idle" && (
             <motion.div
               key="idle"
@@ -99,6 +99,7 @@ const UrgeTracker = () => {
             </motion.div>
           )}
 
+          {/* ── Logging ── */}
           {status === "logging" && (
             <motion.div
               key="logging"
@@ -121,6 +122,7 @@ const UrgeTracker = () => {
             </motion.div>
           )}
 
+          {/* ── Success ── */}
           {status === "success" && (
             <motion.div
               key="success"
@@ -143,10 +145,7 @@ const UrgeTracker = () => {
                   margin: "0 auto 1rem",
                 }}
               >
-                <i
-                  className="tim-icons icon-check-2"
-                  style={{ color: "#00c864", fontSize: "1.6rem" }}
-                />
+                <i className="tim-icons icon-check-2" style={{ color: "#00c864", fontSize: "1.6rem" }} />
               </div>
               <p style={{ fontWeight: 600, marginBottom: "0.5rem" }}>
                 Urge logged. You're doing great.
@@ -170,6 +169,7 @@ const UrgeTracker = () => {
             </motion.div>
           )}
 
+          {/* ── Error ── */}
           {status === "error" && (
             <motion.div
               key="error"
@@ -193,12 +193,9 @@ const UrgeTracker = () => {
           )}
         </AnimatePresence>
 
-        {/* ── Recent log count ── */}
+        {/* Recent log count */}
         {!logsLoading && recentLogs.length > 0 && (
-          <p
-            className="text-muted"
-            style={{ fontSize: "0.8rem", marginTop: "1.5rem", marginBottom: 0 }}
-          >
+          <p className="text-muted" style={{ fontSize: "0.8rem", marginTop: "1.5rem", marginBottom: 0 }}>
             {recentLogs.length === 1
               ? "1 urge logged recently"
               : `${recentLogs.length} urges logged recently`}
