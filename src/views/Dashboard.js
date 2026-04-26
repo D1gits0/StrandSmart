@@ -11,6 +11,7 @@ import { auth } from "firebaseConfig";
 import { useAuth } from "context/AuthContext";
 import useUrgeLog from "hooks/useUrgeLog";
 import UrgeTracker from "components/UrgeTracker/UrgeTracker";
+import InsightsSection from "components/Insights/InsightsSection";
 import ExamplesNavbar from "components/Navbars/ExamplesNavbar.js";
 import Footer from "components/Footer/Footer.js";
 
@@ -100,6 +101,9 @@ const Dashboard = () => {
                 >
                   <UrgeTracker />
                 </motion.div>
+
+                {/* ── Insights: streak + charts ── */}
+                <InsightsSection logs={recentLogs} logsLoading={logsLoading} />
 
                 {/* ── Recent log history ── */}
                 <motion.div

@@ -3,6 +3,7 @@ import Fade from "react-reveal/Fade";
 import { motion } from "framer-motion";
 import { Button, Container, Row, Col } from "reactstrap";
 import { community } from "data/content";
+import LiveSupportFeed from "components/LiveSupportFeed/LiveSupportFeed";
 
 const More = () => (
   <div className="section section-basic" id="community">
@@ -80,6 +81,14 @@ const More = () => (
           </Col>
         </Row>
       </div>
+
+      {/* ── Live Support Feed ── */}
+      <div style={{ width: "100%", textAlign: "left" }}>
+        <Fade>
+          <LiveSupportFeed />
+        </Fade>
+      </div>
+
     </Container>
   </div>
 );

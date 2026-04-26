@@ -37,7 +37,7 @@ const useUrgeLog = () => {
     if (!currentUser) return;
 
     const logsRef = collection(db, "users", currentUser.uid, "logs");
-    const q = query(logsRef, orderBy("loggedAt", "desc"), limit(10));
+    const q = query(logsRef, orderBy("loggedAt", "desc"), limit(100));
 
     const unsubscribe = onSnapshot(
       q,

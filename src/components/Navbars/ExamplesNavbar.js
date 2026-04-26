@@ -11,11 +11,13 @@ import {
   Row,
   Col,
 } from "reactstrap";
+import { useAuth } from "context/AuthContext";
 
 const ExamplesNavbar = () => {
   const [collapseOpen, setCollapseOpen] = useState(false);
-  const [collapseOut, setCollapseOut] = useState("");
-  const [navColor, setNavColor] = useState("navbar-transparent");
+  const [collapseOut, setCollapseOut]   = useState("");
+  const [navColor, setNavColor]         = useState("navbar-transparent");
+  const { currentUser }                 = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,6 +39,7 @@ const ExamplesNavbar = () => {
     <Navbar className={`fixed-top ${navColor}`} expand="lg">
       <Container>
         <div className="navbar-translate">
+          {/* tag={Link} + to="/" — client-side navigation, no page refresh */}
           <NavbarBrand tag={Link} to="/" id="navbar-brand">
             <span>Strandsmart</span>
           </NavbarBrand>
@@ -77,7 +80,7 @@ const ExamplesNavbar = () => {
 
           <Nav navbar>
             <NavItem>
-              <NavLink tag={Link} to="/components">
+              <NavLink tag={Link} to="/">
                 Home
               </NavLink>
             </NavItem>
@@ -87,9 +90,15 @@ const ExamplesNavbar = () => {
               </NavLink>
             </NavItem>
             <NavItem>
-              <NavLink tag={Link} to="/login-page">
-                Sign In
-              </NavLink>
+              {currentUser ? (
+                <NavLink tag={Link} to="/dashboard">
+                  Dashboard
+                </NavLink>
+              ) : (
+                <NavLink tag={Link} to="/login-page">
+                  Sign In
+                </NavLink>
+              )}
             </NavItem>
           </Nav>
         </Collapse>
