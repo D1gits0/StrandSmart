@@ -1,23 +1,5 @@
-/*!
-
-=========================================================
-* BLK Design System React - v1.2.2
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/blk-design-system-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/blk-design-system-react/blob/main/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-// reactstrap components
 import {
   Button,
   Collapse,
@@ -28,63 +10,44 @@ import {
   NavbarBrand,
   Navbar,
   NavItem,
-  NavLink,
   Nav,
   Container,
   Row,
   Col,
-  UncontrolledTooltip,
 } from "reactstrap";
 
-export default function IndexNavbar() {
-  const [collapseOpen, setCollapseOpen] = React.useState(false);
-  const [collapseOut, setCollapseOut] = React.useState("");
-  const [color, setColor] = React.useState("navbar-transparent");
-  React.useEffect(() => {
-    window.addEventListener("scroll", changeColor);
-    return function cleanup() {
-      window.removeEventListener("scroll", changeColor);
+const IndexNavbar = () => {
+  const [collapseOpen, setCollapseOpen] = useState(false);
+  const [collapseOut, setCollapseOut] = useState("");
+  const [navColor, setNavColor] = useState("navbar-transparent");
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrolled =
+        document.documentElement.scrollTop > 99 ||
+        document.body.scrollTop > 99;
+      setNavColor(scrolled ? "bg-info" : "navbar-transparent");
     };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-  const changeColor = () => {
-    if (
-      document.documentElement.scrollTop > 99 ||
-      document.body.scrollTop > 99
-    ) {
-      setColor("bg-info");
-    } else if (
-      document.documentElement.scrollTop < 100 ||
-      document.body.scrollTop < 100
-    ) {
-      setColor("navbar-transparent");
-    }
-  };
+
   const toggleCollapse = () => {
     document.documentElement.classList.toggle("nav-open");
-    setCollapseOpen(!collapseOpen);
+    setCollapseOpen((prev) => !prev);
   };
-  const onCollapseExiting = () => {
-    setCollapseOut("collapsing-out");
-  };
-  const onCollapseExited = () => {
-    setCollapseOut("");
-  };
-  const scrollToDownload = () => {
-    document
-      .getElementById("download-section")
-      .scrollIntoView({ behavior: "smooth" });
-  };
+
   return (
-    <Navbar className={"fixed-top " + color} color-on-scroll="100" expand="lg">
+    <Navbar
+      className={`fixed-top ${navColor}`}
+      expand="lg"
+      style={{ backdropFilter: "blur(10px)" }}
+    >
       <Container>
         <div className="navbar-translate">
-          <NavbarBrand to="/" tag={Link} id="navbar-brand">
-            <span>StrandSmart• </span>
-            Thrive Together
+          <NavbarBrand tag={Link} to="/" id="navbar-brand">
+            <span>Strandsmart</span>
           </NavbarBrand>
-          <UncontrolledTooltip placement="bottom" target="navbar-brand">
-            Rip through Trichotillomania
-          </UncontrolledTooltip>
           <button
             aria-expanded={collapseOpen}
             className="navbar-toggler navbar-toggler"
@@ -95,19 +58,18 @@ export default function IndexNavbar() {
             <span className="navbar-toggler-bar bar3" />
           </button>
         </div>
+
         <Collapse
-          className={"justify-content-end " + collapseOut}
+          className={`justify-content-end ${collapseOut}`}
           navbar
           isOpen={collapseOpen}
-          onExiting={onCollapseExiting}
-          onExited={onCollapseExited}
+          onExiting={() => setCollapseOut("collapsing-out")}
+          onExited={() => setCollapseOut("")}
         >
           <div className="navbar-collapse-header">
             <Row>
               <Col className="collapse-brand" xs="6">
-                <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                  StrandSmart
-                </a>
+                <Link to="/">Strandsmart</Link>
               </Col>
               <Col className="collapse-close text-right" xs="6">
                 <button
@@ -120,49 +82,13 @@ export default function IndexNavbar() {
               </Col>
             </Row>
           </div>
+
           <Nav navbar>
-            <NavItem className="p-0">
-              <NavLink
-                data-placement="bottom"
-                href="https://twitter.com/StrandSmart"
-                rel="noopener noreferrer"
-                target="_blank"
-                title="Follow us on Twitter"
-              >
-                <i className="fab fa-twitter" />
-                <p className="d-lg-none d-xl-none">Twitter</p>
-              </NavLink>
-            </NavItem>
-            <NavItem className="p-0">
-              <NavLink
-                data-placement="bottom"
-                href="https://www.facebook.com/StrandSmart"
-                rel="noopener noreferrer"
-                target="_blank"
-                title="Like us on Facebook"
-              >
-                <i className="fab fa-facebook-square" />
-                <p className="d-lg-none d-xl-none">Facebook</p>
-              </NavLink>
-            </NavItem>
-            <NavItem className="p-0">
-              <NavLink
-                data-placement="bottom"
-                href="https://www.instagram.com/StrandSmart"
-                rel="noopener noreferrer"
-                target="_blank"
-                title="Follow us on Instagram"
-              >
-                <i className="fab fa-instagram" />
-                <p className="d-lg-none d-xl-none">Instagram</p>
-              </NavLink>
-            </NavItem>
             <UncontrolledDropdown nav>
               <DropdownToggle
                 caret
                 color="default"
                 data-toggle="dropdown"
-                href="#pablo"
                 nav
                 onClick={(e) => e.preventDefault()}
               >
@@ -171,36 +97,30 @@ export default function IndexNavbar() {
               </DropdownToggle>
               <DropdownMenu className="dropdown-with-icons">
                 <DropdownItem tag={Link} to="/about-page">
-                  <i class="fas fa-users"></i>
+                  <i className="fas fa-users" />
                   About
                 </DropdownItem>
                 <DropdownItem tag={Link} to="/register-page">
-                  <i class="fas fa-folder-open"></i>
+                  <i className="fas fa-folder-open" />
                   Resources
                 </DropdownItem>
-                
-                {/* <DropdownItem tag={Link} to="/landing-page">
-                  <i class="fas fa-clipboard"></i>
-                  Blog
-                </DropdownItem>
-                <DropdownItem tag={Link} to="/profile-page">
-                  <i className="fas fa-info"></i>
-                  Support
-                </DropdownItem>
-                <DropdownItem tag={Link} to="/profile-page">
-                <i class="fas fa-user"></i>
-                  Contact
-                </DropdownItem> */}
               </DropdownMenu>
             </UncontrolledDropdown>
+
             <NavItem>
               <Button
                 className="nav-link d-none d-lg-block"
                 color="primary"
-                target="_blank"
                 href="/register-page"
+                style={{
+                  borderRadius: "6px",
+                  fontWeight: 600,
+                  letterSpacing: "0.04em",
+                  transition: "all 0.18s ease",
+                  boxShadow: "0 4px 14px rgba(0,200,100,0.25)",
+                }}
               >
-                <i class="fas fa-user-plus"></i> Sign up
+                <i className="fas fa-user-plus" /> Sign Up
               </Button>
             </NavItem>
           </Nav>
@@ -208,4 +128,6 @@ export default function IndexNavbar() {
       </Container>
     </Navbar>
   );
-}
+};
+
+export default IndexNavbar;

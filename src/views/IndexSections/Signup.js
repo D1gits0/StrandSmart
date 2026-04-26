@@ -1,28 +1,7 @@
-/*!
-
-=========================================================
-* BLK Design System React - v1.2.2
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/blk-design-system-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/blk-design-system-react/blob/main/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-import React from "react";
+import React, { useState } from "react";
 import classnames from "classnames";
-import { Link } from "react-router-dom";
-import { motion } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
-import LightSpeed from 'react-reveal/Fade';
-
-// reactstrap components
+import Fade from "react-reveal/Fade";
+import { motion } from "framer-motion";
 import {
   Button,
   Card,
@@ -31,8 +10,6 @@ import {
   CardFooter,
   CardImg,
   CardTitle,
-  Label,
-  FormGroup,
   Form,
   Input,
   InputGroupAddon,
@@ -42,16 +19,26 @@ import {
   Row,
   Col,
 } from "reactstrap";
+import { signup } from "data/content";
 
-export default function Signup() {
-  const [fullNameFocus, setFullNameFocus] = React.useState(false);
-  const [emailFocus, setEmailFocus] = React.useState(false);
-  const [passwordFocus, setPasswordFocus] = React.useState(false);
+const Signup = () => {
+  const [fullNameFocus, setFullNameFocus] = useState(false);
+  const [emailFocus, setEmailFocus] = useState(false);
 
-  const { ref, inView } = useInView({
-    triggerOnce: true, // Animation triggers only once when in view
-    threshold: 0.1, // Adjust the threshold as needed
-  });
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [submitError, setSubmitError] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitError(null);
+    try {
+      // TODO: replace with API call, e.g.:
+      // await api.subscribe({ fullName, email });
+    } catch (err) {
+      setSubmitError("Something went wrong. Please try again.");
+    }
+  };
 
   return (
     <div className="section section-signup">
@@ -63,69 +50,91 @@ export default function Signup() {
         <Row className="row-grid justify-content-between align-items-center">
           <Col lg="6">
             <h3 className="display-3 text-white">
-              <LightSpeed>
-              Sign Up
-              </LightSpeed>
+              <Fade>{signup.heading}</Fade>
             </h3>
             <p className="text-white mb-3">
-            <LightSpeed>
-            Sign up to receive practical tips, expert advice, and the latest updates straight to your inbox. 
-            Stay connected and informed on managing trichotillomania.
-            </LightSpeed>
+              <Fade>{signup.body}</Fade>
             </p>
           </Col>
+
           <Col className="mb-lg-auto" lg="6">
-            <Card className="card-register">
+            <Card
+              className="card-register"
+              style={{ borderRadius: "8px", boxShadow: "0 8px 32px rgba(0,0,0,0.45)" }}
+            >
               <CardHeader>
                 <CardImg
-                  alt="..."
+                  alt="Strandsmart"
                   src={require("assets/img/green-square-background.jpg")}
-                  style={{ marginTop: "-25px" }} // Adjust the value as needed
+                  style={{ marginTop: "-25px", borderRadius: "8px 8px 0 0" }}
                 />
-                <CardTitle tag="h4"> Register</CardTitle>
+                <CardTitle tag="h4">{signup.form.title}</CardTitle>
               </CardHeader>
+
               <CardBody>
-                <Form className="form">
-                  <InputGroup
-                    className={classnames({
-                      "input-group-focus": fullNameFocus,
-                    })}
-                  >
+                <Form onSubmit={handleSubmit}>
+                  <InputGroup className={classnames({ "input-group-focus": fullNameFocus })}>
                     <InputGroupAddon addonType="prepend">
-                      <InputGroupText>
+                      <InputGroupText style={{ borderRadius: "6px 0 0 6px" }}>
                         <i className="tim-icons icon-single-02" />
                       </InputGroupText>
                     </InputGroupAddon>
                     <Input
-                      placeholder="Full Name"
-                      type="text"
-                      onFocus={(e) => setFullNameFocus(true)}
-                      onBlur={(e) => setFullNameFocus(false)}
+                      placeholder={signup.form.fields.fullName.placeholder}
+                      type={signup.form.fields.fullName.type}
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      onFocus={() => setFullNameFocus(true)}
+                      onBlur={() => setFullNameFocus(false)}
+                      style={{ borderRadius: "0 6px 6px 0" }}
                     />
                   </InputGroup>
-                  <InputGroup
-                    className={classnames({
-                      "input-group-focus": emailFocus,
-                    })}
-                  >
+
+                  <InputGroup className={classnames({ "input-group-focus": emailFocus })}>
                     <InputGroupAddon addonType="prepend">
-                      <InputGroupText>
+                      <InputGroupText style={{ borderRadius: "6px 0 0 6px" }}>
                         <i className="tim-icons icon-email-85" />
                       </InputGroupText>
                     </InputGroupAddon>
                     <Input
-                      placeholder="Email"
-                      type="text"
-                      onFocus={(e) => setEmailFocus(true)}
-                      onBlur={(e) => setEmailFocus(false)}
+                      placeholder={signup.form.fields.email.placeholder}
+                      type={signup.form.fields.email.type}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      onFocus={() => setEmailFocus(true)}
+                      onBlur={() => setEmailFocus(false)}
+                      style={{ borderRadius: "0 6px 6px 0" }}
                     />
-                  </InputGroup> 
+                  </InputGroup>
+
+                  {submitError && (
+                    <p className="text-danger mt-2" style={{ fontSize: "0.85rem" }}>
+                      {submitError}
+                    </p>
+                  )}
                 </Form>
               </CardBody>
+
               <CardFooter>
-                <Button className="btn-round" color="primary" size="lg">
-                  Get Started
-                </Button>
+                <motion.div
+                  whileHover={{ scale: 1.04, transition: { duration: 0.12 } }}
+                  whileTap={{ scale: 0.96, transition: { duration: 0.08 } }}
+                >
+                  <Button
+                    className="btn-round"
+                    color="primary"
+                    size="lg"
+                    onClick={handleSubmit}
+                    style={{
+                      borderRadius: "6px",
+                      fontWeight: 600,
+                      letterSpacing: "0.04em",
+                      boxShadow: "0 4px 14px rgba(0,200,100,0.3)",
+                    }}
+                  >
+                    {signup.form.submitLabel}
+                  </Button>
+                </motion.div>
               </CardFooter>
             </Card>
           </Col>
@@ -133,4 +142,6 @@ export default function Signup() {
       </Container>
     </div>
   );
-}
+};
+
+export default Signup;

@@ -1,51 +1,59 @@
-/*!
-
-=========================================================
-* BLK Design System React - v1.2.2
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/blk-design-system-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/blk-design-system-react/blob/main/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
 import { Link } from "react-router-dom";
-// reactstrap components
 import {
-  Button,
   NavItem,
   NavLink,
   Nav,
   Container,
   Row,
   Col,
-  UncontrolledTooltip,
 } from "reactstrap";
 
-export default function Footer() {
+const Footer = () => {
   return (
-    <footer className="footer">
+    <footer
+      className="footer"
+      style={{
+        borderTop: "1px solid rgba(255,255,255,0.08)",
+        paddingTop: "2rem",
+        paddingBottom: "2rem",
+      }}
+    >
       <Container>
-        <Row>
-          <Col md="3">
-            <h1 className="title">StrandSmart•</h1>
+        <Row className="align-items-start">
+          <Col md="3" className="mb-4 mb-md-0">
+            <h4
+              className="title"
+              style={{
+                fontWeight: 700,
+                letterSpacing: "0.06em",
+                fontSize: "1.1rem",
+              }}
+            >
+              Strandsmart
+            </h4>
+            <p
+              className="text-muted"
+              style={{ fontSize: "0.85rem", marginTop: "0.5rem" }}
+            >
+              Your Vision, Unified.
+            </p>
           </Col>
-          <Col md="3">
-            <Nav>
+          <Col md="3" className="mb-4 mb-md-0">
+            <h6
+              className="text-uppercase font-weight-bold mb-3"
+              style={{ letterSpacing: "0.1em", fontSize: "0.75rem", opacity: 0.6 }}
+            >
+              Navigation
+            </h6>
+            <Nav className="flex-column">
               <NavItem>
                 <NavLink to="/" tag={Link}>
                   Home
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink to="/landing-page" tag={Link}>
+                <NavLink to="/about-page" tag={Link}>
                   About
                 </NavLink>
               </NavItem>
@@ -54,80 +62,44 @@ export default function Footer() {
                   Resources
                 </NavLink>
               </NavItem>
-              <NavItem>
-                <NavLink to="/profile-page" tag={Link}>
-                  Blog
-                </NavLink>
-              </NavItem>
             </Nav>
           </Col>
-          <Col md="3">
-            <Nav>
+          <Col md="3" className="mb-4 mb-md-0">
+            <h6
+              className="text-uppercase font-weight-bold mb-3"
+              style={{ letterSpacing: "0.1em", fontSize: "0.75rem", opacity: 0.6 }}
+            >
+              Company
+            </h6>
+            <Nav className="flex-column">
               <NavItem>
-                <NavLink href="https://creative-tim.com/contact-us?ref=blkdsr-footer">
-                  Support
-                </NavLink>
+                <NavLink href="/about-page">About Us</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink href="https://creative-tim.com/about-us?ref=blkdsr-footer">
-                  Contact Us
-                </NavLink>
+                <NavLink href="mailto:hello@strandsmart.com">Contact</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink href="https://creative-tim.com/blog?ref=blkdsr-footer">
-                  Blog
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink href="https://opensource.org/licenses/MIT">
+                <NavLink href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener noreferrer">
                   License
                 </NavLink>
               </NavItem>
             </Nav>
           </Col>
           <Col md="3">
-            <h3 className="title">Follow us:</h3>
-            <div className="btn-wrapper profile">
-              <Button
-                className="btn-icon btn-neutral btn-round btn-simple"
-                color="default"
-                href="https://twitter.com/StrandSmart"
-                id="tooltip622135962"
-                target="_blank"
-              >
-                <i className="fab fa-twitter" />
-              </Button>
-              <UncontrolledTooltip delay={0} target="tooltip622135962">
-                Follow us
-              </UncontrolledTooltip>
-              <Button
-                className="btn-icon btn-neutral btn-round btn-simple"
-                color="default"
-                href="https://www.facebook.com/StrandSmart"
-                id="tooltip230450801"
-                target="_blank"
-              >
-                <i className="fab fa-facebook-square" />
-              </Button>
-              <UncontrolledTooltip delay={0} target="tooltip230450801">
-                Like us
-              </UncontrolledTooltip>
-              <Button
-                className="btn-icon btn-neutral btn-round btn-simple"
-                color="default"
-                href="https://instagram.com/StrandSmart"
-                id="tooltip318450378"
-                target="_blank"
-              >
-                <i className="fab fa-instagram" />
-              </Button>
-              <UncontrolledTooltip delay={0} target="tooltip318450378">
-                Follow us
-              </UncontrolledTooltip>
-            </div>
+            <h6
+              className="text-uppercase font-weight-bold mb-3"
+              style={{ letterSpacing: "0.1em", fontSize: "0.75rem", opacity: 0.6 }}
+            >
+              Legal
+            </h6>
+            <p className="text-muted" style={{ fontSize: "0.82rem" }}>
+              © {new Date().getFullYear()} Strandsmart. All rights reserved.
+            </p>
           </Col>
         </Row>
       </Container>
     </footer>
   );
-}
+};
+
+export default Footer;

@@ -1,93 +1,87 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import Fade from 'react-reveal/Fade';
-import LightSpeed from 'react-reveal/Fade';
+import Fade from "react-reveal/Fade";
 import { motion } from "framer-motion";
-import { useInView } from 'react-intersection-observer';
+import { Button, Container, Row, Col } from "reactstrap";
+import { community } from "data/content";
 
-// plugin that creates slider
+const More = () => (
+  <div className="section section-basic" id="community">
+    <img alt="" className="path" src={require("assets/img/path2.png")} />
+    <Container
+      className="d-flex flex-column justify-content-center align-items-center text-center"
+      style={{ minHeight: "100vh" }}
+    >
+      <Fade>
+        <h1 className="title">{community.heading}</h1>
+      </Fade>
 
+      <Fade>
+        <h3>
+          <blockquote>{community.quote}</blockquote>
+        </h3>
+      </Fade>
 
-// reactstrap components
-import {
-  Button,
-  Container,
-  Row,
-  Col,
-} from "reactstrap";
+      <Row>
+        <Col>
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            whileHover={{ scale: 1.05, transition: { duration: 0.12 } }}
+            whileTap={{ scale: 0.95, transition: { duration: 0.08 } }}
+          >
+            <a
+              href={community.redditCta.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button
+                className="btn-round"
+                color="primary"
+                style={{ borderRadius: "6px", fontWeight: 600 }}
+              >
+                <i className="fab fa-reddit" style={{ marginRight: "6px" }} />
+                {community.redditCta.label}
+              </Button>
+            </a>
+          </motion.div>
+        </Col>
+      </Row>
 
-export default function More() {
-    const { ref, inView } = useInView({
-      triggerOnce: true, // Animation triggers only once when in view
-      threshold: 0.1, // Adjust the threshold as needed
-});
-
-  return (
-    <div className="section section-basic" id="basic-elements">
-      <img alt="..." className="path" src={require("assets/img/path2.png")} />
-      <Container
-         className="d-flex flex-column justify-content-center align-items-center text-center"
-         style={{ minHeight: "100vh" }}
-      >
-        <LightSpeed>
-          <h1 className="title"> Community</h1>
-          </LightSpeed>
+      <div style={{ margin: "5rem 0 2rem" }}>
         <Fade>
-          <h3>
-            <blockquote>Connect with others who understand your experience. 
-              Share your story, ask questions, and find support in our safe and welcoming community.</blockquote>
-  </h3>
-  </Fade>
+          <h1 className="title">{community.getInvolved.heading}</h1>
+        </Fade>
         <Row>
           <Col>
-        <motion.div
-                ref ={ref}
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 4, delay: 0.5 }}
-              >
-                 <a href="https://www.reddit.com/r/trichotillomania" target="blank" rel="nooopener noreferrer">
-                <Button className="btn-round btn-orange" type="button">
-                <i className="fab fa-reddit" style={{ marginRight: "5px"}}/> 
-                Join Us on Reddit 
-                  </Button>
-                  </a>
-              </motion.div>
+            <h3>
+              <Fade>{community.getInvolved.body}</Fade>
+            </h3>
           </Col>
-        </Row> 
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-          <h1 classname="title">
-          <LightSpeed>
-          Get Involved
-          </LightSpeed>
-          </h1>
-        <Row/>
-      <Row>
-        <h3>
-         <LightSpeed>
-         Join us in raising awareness about trichotillomania.
-          Participate in campaigns, share our resources, and help make a difference.
-         </LightSpeed>
-         </h3>
-      </Row>
-      <Row>
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 4, delay: 0.5 }}
-        >
-        <Button className="btn-round" color="primary" type="button">
-          Learn How 
-        </Button>
-        </motion.div>
-      </Row>
-        <br />
-      </Container>
-    </div>
-  );
-}
+        </Row>
+        <Row>
+          <Col>
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              whileHover={{ scale: 1.05, transition: { duration: 0.12 } }}
+              whileTap={{ scale: 0.95, transition: { duration: 0.08 } }}
+            >
+              <Button
+                className="btn-round"
+                color="primary"
+                href={community.getInvolved.cta.href}
+                style={{ borderRadius: "6px", fontWeight: 600 }}
+              >
+                {community.getInvolved.cta.label}
+              </Button>
+            </motion.div>
+          </Col>
+        </Row>
+      </div>
+    </Container>
+  </div>
+);
+
+export default More;

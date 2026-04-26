@@ -1,185 +1,118 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Fade from 'react-reveal/Fade';
-import LightSpeed from 'react-reveal/Fade';
+import Fade from "react-reveal/Fade";
 import { motion } from "framer-motion";
-import { useInView } from 'react-intersection-observer';
+import { Button, Container, Row, Col } from "reactstrap";
+import { about } from "data/content";
 
-// plugin that creates slider
+// Shared motion config for card image/button entrance
+const cardEntrance = {
+  initial: { opacity: 0, y: -20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.8 },
+};
 
+const About = () => (
+  <div className="section section-basic" id="about">
+    <img alt="" className="path" src={require("assets/img/path1.png")} />
+    <Container
+      className="d-flex flex-column justify-content-center align-items-center text-center"
+      style={{ minHeight: "100vh" }}
+    >
+      <Fade>
+        <h1 className="title">{about.heading}</h1>
+      </Fade>
 
-// reactstrap components
-import {
-  Button,
-  Container,
-  Row,
-  Col,
-} from "reactstrap";
+      <Fade>
+        <h3>
+          <blockquote>
+            "<strong>Strandsmart</strong>{" "}
+            {about.quote.replace(/^Strandsmart\s+/, "")}
+          </blockquote>
+        </h3>
+      </Fade>
 
-export default function About() {
-  const { ref, inView } = useInView({
-    triggerOnce: true, // Animation triggers only once when in view
-    threshold: 0.1, // Adjust the threshold as needed
-  });
-  const { ref: firstImageRef, inView: firstImageInView } = useInView({
-    triggerOnce: true,
-    threshold: 0.1
-  });
-  const { ref: firstButtonRef, inView: firstButtonInView } = useInView({
-    triggerOnce: true,
-    threshold: 0.1
-  });
-  const { ref: secondImageRef, inView: secondImageInView } = useInView({
-    triggerOnce: true,
-    threshold: 0.1
-  });
-  const { ref: secondButtonRef, inView: secondButtonInView } = useInView({
-    triggerOnce: true,
-    threshold: 0.1
-  });
+      <Row>
+        <Col>
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            whileHover={{ scale: 1.05, transition: { duration: 0.12 } }}
+            whileTap={{ scale: 0.95, transition: { duration: 0.08 } }}
+          >
+            <Button
+              className="btn-round"
+              color="primary"
+              href={about.primaryCta.href}
+              style={{ borderRadius: "6px", fontWeight: 600 }}
+            >
+              {about.primaryCta.label}
+            </Button>
+          </motion.div>
+        </Col>
+      </Row>
 
-  return (
-    <div className="section section-basic" id="basic-elements">
-      <img alt="..." className="path" src={require("assets/img/path1.png")} />
-      <Container
-         className="d-flex flex-column justify-content-center align-items-center text-center"
-         style={{ minHeight: "100vh" }}
-      >
-        <LightSpeed>
-          <h1 className="title">About Us</h1>
-          </LightSpeed>
+      <div style={{ margin: "5rem 0 3rem" }}>
         <Fade>
-          <h3>
-            <blockquote>"<strong>StrandSmart</strong> is dedicated to providing resources, support, and community for those dealing with <em>trichotillomania</em>. 
-            Our mission is to <u>normalize</u> the condition and offer practical guidance for managing it."</blockquote>
-  </h3>
-  </Fade>
-        <Row>
-          <Col>
-        <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 4, delay: 0.5 }}
+          <h1 className="title">{about.resources.heading}</h1>
+        </Fade>
+        <Row className="align-items-center justify-content-center">
+          <Col md="6">
+            <h4 style={{ textAlign: "left" }}>
+              <Fade>{about.resources.body}</Fade>
+            </h4>
+          </Col>
+          <Col md="3" xs="6">
+            <motion.img
+              alt="Open hands"
+              className="img-fluid rounded-circle shadow-lg"
+              src={require("assets/img/openhands.png")}
+              style={{ width: "150px" }}
+              initial={{ opacity: 0, scale: 0.7 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8 }}
+            />
+          </Col>
+        </Row>
+      </div>
+
+      <Row>
+        {about.cards.map((card) => (
+          <Col sm="6" key={card.id}>
+            <motion.div
+              {...cardEntrance}
+              whileHover={{ scale: 0.95 }}
+            >
+              <Link to={card.linkTo}>
+                <img
+                  alt={card.alt}
+                  className="img-raised"
+                  src={require(`assets/img/${card.image}`)}
+                />
+              </Link>
+            </motion.div>
+            <motion.div
+              {...cardEntrance}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              whileHover={{ scale: 1.05, transition: { duration: 0.12 } }}
+              whileTap={{ scale: 0.95, transition: { duration: 0.08 } }}
+            >
+              <Button
+                className="btn-simple btn-round"
+                color="primary"
+                to={card.linkTo}
+                tag={Link}
+                style={{ borderRadius: "6px", fontWeight: 600 }}
               >
-                <Button className="btn-round" color="primary" type="button">
-                  Read Our Story
-                </Button>
-              </motion.div>
+                {card.cta}
+              </Button>
+            </motion.div>
           </Col>
-        </Row> 
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-          <h1 classname="title">
-          <LightSpeed>
-          Resources
-          </LightSpeed>
-          </h1>
-        <Row/>
-        <Row>
-          <Col>
-          </Col>
-          <Col>
-          <h4 style={{ textAlign: "left" }}>
-            <LightSpeed>
+        ))}
+      </Row>
+    </Container>
+  </div>
+);
 
-          Discover information to help you understand and manage trichotillomania. Our articles, guides, and stories offer practical tips, expert advice, and support. Learn about the condition, explore coping strategies, and connect with others.
-          </LightSpeed>
-          </h4>
-          </Col>
-          <Col className="mt-5 mt-sm-0" sm="3" xs="6">
-              <motion.img
-                alt="..."
-                className="img-fluid rounded-circle shadow-lg"
-                src={require("assets/img/openhands.png")}
-                style={{ width: "150px" }}
-                initial={{ opacity: 0, scale: 0.7 }}
-                animate={{ opacity: 1, scale: 1.2 }}
-                transition={{ duration: 4 }}
-              />
-            </Col>
-            <Col>
-
-            </Col>
-        </Row>
-        <br/>
-        <br/>
-        <br/>
-        <Row>
-        <Col sm="6">
-        <motion.div
-          ref={firstImageRef}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 3 }}
-          whileHover={{ scale: 0.9 }}
-        >
-          <Link to="landing-page">
-            <img
-              alt="..."
-              className="img-raised"
-              src={require("assets/img/strandsmartlogo.png")}
-            />
-          </Link>
-        </motion.div>
-        <motion.div
-          ref={firstButtonRef}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 3, delay: 0.5 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <Button
-            className="btn-simple btn-round"
-            color="primary"
-            to="landing-page"
-            tag={Link}
-          >
-            See Articles
-          </Button>
-        </motion.div>
-      </Col>
-      <Col sm="6">
-        <motion.div
-          ref={secondImageRef}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 3 }}
-          whileHover={{ scale: 0.9 }}
-        >
-          <Link to="profile-page">
-            <img
-              alt="..."
-              className="img-raised"
-              src={require("assets/img/strandsmartlogo.png")}
-            />
-          </Link>
-        </motion.div>
-        <motion.div
-          ref={secondButtonRef}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 3, delay: 0.5 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <Button
-            className="btn-simple btn-round"
-            color="primary"
-            to="profile-page"
-            tag={Link}
-          >
-            See Blog
-          </Button>
-        </motion.div>
-      </Col>
-        </Row>
-        <br />
-      </Container>
-    </div>
-  );
-}
+export default About;

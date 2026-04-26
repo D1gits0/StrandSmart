@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
 import classnames from "classnames";
-import { Link, useNavigate } from "react-router-dom";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import {
-  Label,
-  FormGroup,
   Form,
   Input,
   InputGroupAddon,
@@ -19,61 +16,34 @@ import ExamplesNavbar from "components/Navbars/ExamplesNavbar.js";
 import Footer from "components/Footer/Footer.js";
 import AuthCard from "components/AuthCard/AuthCard.js";
 import useParallaxSquares from "hooks/useParallaxSquares.js";
-import { auth, db } from "firebaseConfig";
-import { registerPage } from "data/content";
+import { auth } from "firebaseConfig";
+import { loginPage } from "data/content";
 
 const SQUARE_IDS_LARGE = [1, 2, 3, 4, 5, 6];
 
-const RegisterPage = () => {
+const LoginPage = () => {
   const navigate = useNavigate();
   const { squaresLarge, squaresSmall } = useParallaxSquares();
 
-  const [fullNameFocus, setFullNameFocus] = useState(false);
   const [emailFocus,    setEmailFocus]    = useState(false);
   const [passwordFocus, setPasswordFocus] = useState(false);
 
-  const [fullName,    setFullName]    = useState("");
   const [email,       setEmail]       = useState("");
   const [password,    setPassword]    = useState("");
-  const [agreed,      setAgreed]      = useState(false);
   const [loading,     setLoading]     = useState(false);
   const [submitError, setSubmitError] = useState(null);
 
   useEffect(() => {
-    document.body.classList.toggle("register-page");
-    return () => document.body.classList.toggle("register-page");
+    document.body.classList.toggle("login-page");
+    return () => document.body.classList.toggle("login-page");
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitError(null);
-
-    if (!agreed) {
-      setSubmitError("Please agree to the terms and conditions.");
-      return;
-    }
-    if (password.length < 6) {
-      setSubmitError("Password must be at least 6 characters.");
-      return;
-    }
-
     setLoading(true);
     try {
-      // 1. Create the Firebase Auth user
-      const { user } = await createUserWithEmailAndPassword(auth, email, password);
-
-      // 2. Set the display name on the Auth profile
-      await updateProfile(user, { displayName: fullName });
-
-      // 3. Create a Firestore user document for future data storage
-      await setDoc(doc(db, "users", user.uid), {
-        uid:         user.uid,
-        displayName: fullName,
-        email:       user.email,
-        createdAt:   serverTimestamp(),
-      });
-
-      // 4. Redirect to dashboard
+      await signInWithEmailAndPassword(auth, email, password);
       navigate("/dashboard");
     } catch (err) {
       setSubmitError(friendlyAuthError(err.code));
@@ -82,7 +52,7 @@ const RegisterPage = () => {
     }
   };
 
-  const { form } = registerPage;
+  const { form } = loginPage;
 
   return (
     <>
@@ -99,32 +69,13 @@ const RegisterPage = () => {
 
                   <AuthCard
                     title={form.title}
-                    submitLabel={loading ? "Creating account…" : form.submitLabel}
+                    submitLabel={loading ? "Signing in…" : form.submitLabel}
                     onSubmit={handleSubmit}
-                    linkPrompt={form.loginPrompt}
-                    linkLabel={form.loginLabel}
-                    linkTo={form.loginHref}
+                    linkPrompt={form.registerPrompt}
+                    linkLabel={form.registerLabel}
+                    linkTo={form.registerHref}
                   >
                     <Form onSubmit={handleSubmit}>
-                      {/* Full Name */}
-                      <InputGroup className={classnames({ "input-group-focus": fullNameFocus })}>
-                        <InputGroupAddon addonType="prepend">
-                          <InputGroupText style={{ borderRadius: "6px 0 0 6px" }}>
-                            <i className="tim-icons icon-single-02" />
-                          </InputGroupText>
-                        </InputGroupAddon>
-                        <Input
-                          placeholder={form.fields.fullName.placeholder}
-                          type={form.fields.fullName.type}
-                          value={fullName}
-                          onChange={(e) => setFullName(e.target.value)}
-                          onFocus={() => setFullNameFocus(true)}
-                          onBlur={() => setFullNameFocus(false)}
-                          style={{ borderRadius: "0 6px 6px 0" }}
-                          required
-                        />
-                      </InputGroup>
-
                       {/* Email */}
                       <InputGroup className={classnames({ "input-group-focus": emailFocus })}>
                         <InputGroupAddon addonType="prepend">
@@ -163,19 +114,6 @@ const RegisterPage = () => {
                         />
                       </InputGroup>
 
-                      {/* Terms */}
-                      <FormGroup check className="text-left">
-                        <Label check>
-                          <Input
-                            type="checkbox"
-                            checked={agreed}
-                            onChange={(e) => setAgreed(e.target.checked)}
-                          />
-                          <span className="form-check-sign" />
-                          {form.termsLabel}
-                        </Label>
-                      </FormGroup>
-
                       {submitError && (
                         <p className="text-danger mt-2" style={{ fontSize: "0.85rem" }}>
                           {submitError}
@@ -207,13 +145,15 @@ const RegisterPage = () => {
 /** Converts Firebase error codes into user-friendly messages. */
 const friendlyAuthError = (code) => {
   const map = {
-    "auth/email-already-in-use":    "An account with this email already exists.",
-    "auth/invalid-email":           "Please enter a valid email address.",
-    "auth/weak-password":           "Password must be at least 6 characters.",
-    "auth/network-request-failed":  "Network error. Please check your connection.",
-    "auth/too-many-requests":       "Too many attempts. Please try again later.",
+    "auth/user-not-found":         "No account found with this email.",
+    "auth/wrong-password":         "Incorrect password. Please try again.",
+    "auth/invalid-email":          "Please enter a valid email address.",
+    "auth/invalid-credential":     "Invalid email or password.",
+    "auth/user-disabled":          "This account has been disabled.",
+    "auth/too-many-requests":      "Too many attempts. Please try again later.",
+    "auth/network-request-failed": "Network error. Please check your connection.",
   };
-  return map[code] || "Registration failed. Please try again.";
+  return map[code] || "Sign in failed. Please try again.";
 };
 
-export default RegisterPage;
+export default LoginPage;

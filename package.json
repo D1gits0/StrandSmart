@@ -1,35 +1,35 @@
 {
-  "name": "blk-design-system-react",
-  "version": "1.2.2",
-  "description": "React version of Strandsmart by Strandsmart",
+  "name": "strandsmart",
+  "version": "1.0.0",
+  "description": "Strandsmart Unified Interface",
   "main": "index.js",
   "author": "Strandsmart",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/creativetimofficial/blk-design-system-react.git"
+    "url": "git+https://github.com/strandsmart/strandsmart.git"
   },
   "bugs": {
-    "url": "https://github.com/creativetimofficial/blk-design-system-react/issues"
+    "url": "https://github.com/strandsmart/strandsmart/issues"
   },
-  "homepage": "https://demos.creative-tim.com/blk-design-system-react/#/",
+  "homepage": "https://www.strandsmart.com",
   "keywords": [
     "react",
     "reactjs",
-    "blk",
-    "blk-react",
+    "strandsmart",
+    "strandsmart-react",
     "design",
     "design-react",
     "system",
     "system-react",
     "design-system",
     "design-system-react",
-    "blk-design",
-    "blk-design-react",
-    "blk-system",
-    "blk-system-react",
-    "blk-design-system",
-    "blk-design-system-react"
+    "strandsmart-design",
+    "strandsmart-design-react",
+    "strandsmart-system",
+    "strandsmart-system-react",
+    "strandsmart-design-system",
+    "strandsmart-design-system-react"
   ],
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.5.2",
@@ -43,15 +43,16 @@
     "bootstrap": "4.6.2",
     "chart.js": "2.9.4",
     "classnames": "2.3.1",
+    "firebase": "^10.12.2",
     "framer-motion": "^11.2.12",
     "moment": "2.29.4",
     "nouislider": "15.4.0",
     "perfect-scrollbar": "1.5.5",
-    "react": ">=16.8.0",
+    "react": "18.3.1",
     "react-animate-on-scroll": "^2.1.9",
     "react-chartjs-2": "2.11.2",
     "react-datetime": "3.2.0",
-    "react-dom": ">=16.8.0",
+    "react-dom": "18.3.1",
     "react-intersection-observer": "^9.10.3",
     "react-native-svg": "^15.3.0",
     "react-reveal": "^1.2.2",
@@ -65,8 +66,8 @@
     "webpack": "^5.92.1"
   },
   "peerDependencies": {
-    "react": ">=16.8.0",
-    "react-dom": ">=16.8.0"
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   },
   "optionalDependencies": {
     "jquery": "3.7.0",
@@ -78,8 +79,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start",
-    "compile-sass": "sass src/assets/scss/blk-design-system-react.scss src/assets/css/blk-design-system-react.css",
-    "minify-sass": "sass src/assets/scss/blk-design-system-react.scss src/assets/css/blk-design-system-react.min.css --style compressed"
+    "compile-sass": "sass src/assets/scss/strandsmart.scss src/assets/css/strandsmart.css",
+    "minify-sass": "sass src/assets/scss/strandsmart.scss src/assets/css/strandsmart.min.css --style compressed"
   },
   "eslintConfig": {
     "extends": [
@@ -90,7 +91,8 @@
   "overrides": {
     "svgo": "3.0.2",
     "chokidar": "3.5.3",
-    "fsevents": "2.3.2"
+    "fsevents": "2.3.2",
+    "react-transition-group": "4.4.5"
   },
   "browserslist": {
     "production": [

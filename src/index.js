@@ -1,47 +1,61 @@
-/*!
-
-=========================================================
-* BLK Design System React - v1.2.2
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/blk-design-system-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/blk-design-system-react/blob/main/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
-import '@fortawesome/fontawesome-free/css/all.min.css';
-
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 import "assets/css/nucleo-icons.css";
 import "assets/scss/blk-design-system-react.scss";
 import "assets/demo/demo.css";
+import "assets/css/strandsmart-overrides.css";
 
-import Index from "views/Index.js";
-import AboutPage from "views/examples/AboutPage.js"
-import LandingPage from "views/examples/LandingPage.js";
+import { AuthProvider } from "context/AuthContext";
+import ProtectedRoute   from "components/ProtectedRoute";
+
+import Index        from "views/Index.js";
+import Dashboard    from "views/Dashboard.js";
+import GroundingPage from "views/GroundingPage.js";
+import AboutPage    from "views/examples/AboutPage.js";
+import LandingPage  from "views/examples/LandingPage.js";
 import RegisterPage from "views/examples/RegisterPage.js";
-import ProfilePage from "views/examples/ProfilePage.js";
+import LoginPage    from "views/examples/LoginPage.js";
+import ProfilePage  from "views/examples/ProfilePage.js";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <BrowserRouter>
-    <Routes>
-      <Route path="/components" element={<Index />} />
-      <Route path="/landing-page" element={<LandingPage />} />
-      <Route path="/register-page" element={<RegisterPage />} />
-      <Route path="/profile-page" element={<ProfilePage />} />
-      <Route path="/about-page" element={<AboutPage />} />
-      <Route path="*" element={<Navigate to="/components" replace />} />
-    </Routes>
+    <AuthProvider>
+      <Routes>
+        {/* Public routes */}
+        <Route path="/"              element={<Index />} />
+        <Route path="/components"    element={<Index />} />
+        <Route path="/landing-page"  element={<LandingPage />} />
+        <Route path="/register-page" element={<RegisterPage />} />
+        <Route path="/login-page"    element={<LoginPage />} />
+        <Route path="/profile-page"  element={<ProfilePage />} />
+        <Route path="/about-page"    element={<AboutPage />} />
+
+        {/* Protected routes — require authentication */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/grounding"
+          element={
+            <ProtectedRoute>
+              <GroundingPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </AuthProvider>
   </BrowserRouter>
 );
