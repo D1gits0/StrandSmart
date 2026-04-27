@@ -15,11 +15,13 @@ import {
   Row,
   Col,
 } from "reactstrap";
+import { useAuth } from "context/AuthContext";
 
 const IndexNavbar = () => {
   const [collapseOpen, setCollapseOpen] = useState(false);
-  const [collapseOut, setCollapseOut] = useState("");
-  const [navColor, setNavColor] = useState("navbar-transparent");
+  const [collapseOut, setCollapseOut]   = useState("");
+  const [navColor, setNavColor]         = useState("navbar-transparent");
+  const { currentUser }                 = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,6 +39,9 @@ const IndexNavbar = () => {
     setCollapseOpen((prev) => !prev);
   };
 
+  // Brand routes to dashboard when logged in, home when not
+  const brandTo = currentUser ? "/dashboard" : "/";
+
   return (
     <Navbar
       className={`fixed-top ${navColor}`}
@@ -45,7 +50,7 @@ const IndexNavbar = () => {
     >
       <Container>
         <div className="navbar-translate">
-          <NavbarBrand tag={Link} to="/" id="navbar-brand">
+          <NavbarBrand tag={Link} to={brandTo} id="navbar-brand">
             <span>Strandsmart</span>
           </NavbarBrand>
           <button
@@ -69,7 +74,7 @@ const IndexNavbar = () => {
           <div className="navbar-collapse-header">
             <Row>
               <Col className="collapse-brand" xs="6">
-                <Link to="/">Strandsmart</Link>
+                <Link to={brandTo}>Strandsmart</Link>
               </Col>
               <Col className="collapse-close text-right" xs="6">
                 <button
@@ -100,28 +105,52 @@ const IndexNavbar = () => {
                   <i className="fas fa-users" />
                   About
                 </DropdownItem>
-                <DropdownItem tag={Link} to="/register-page">
+                <DropdownItem tag={Link} to="/resources">
                   <i className="fas fa-folder-open" />
                   Resources
+                </DropdownItem>
+                <DropdownItem tag={Link} to="/learn-more">
+                  <i className="fas fa-book-open" />
+                  Learn More
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
 
             <NavItem>
-              <Button
-                className="nav-link d-none d-lg-block"
-                color="primary"
-                href="/register-page"
-                style={{
-                  borderRadius: "6px",
-                  fontWeight: 600,
-                  letterSpacing: "0.04em",
-                  transition: "all 0.18s ease",
-                  boxShadow: "0 4px 14px rgba(0,200,100,0.25)",
-                }}
-              >
-                <i className="fas fa-user-plus" /> Sign Up
-              </Button>
+              {currentUser ? (
+                <Button
+                  className="nav-link d-none d-lg-block"
+                  color="primary"
+                  tag={Link}
+                  to="/dashboard"
+                  style={{
+                    borderRadius: "6px",
+                    fontWeight: 600,
+                    letterSpacing: "0.04em",
+                    transition: "all 0.18s ease",
+                    boxShadow: "0 4px 14px rgba(0,200,100,0.25)",
+                  }}
+                >
+                  <i className="tim-icons icon-chart-pie-36" style={{ marginRight: 5 }} />
+                  Dashboard
+                </Button>
+              ) : (
+                <Button
+                  className="nav-link d-none d-lg-block"
+                  color="primary"
+                  tag={Link}
+                  to="/register-page"
+                  style={{
+                    borderRadius: "6px",
+                    fontWeight: 600,
+                    letterSpacing: "0.04em",
+                    transition: "all 0.18s ease",
+                    boxShadow: "0 4px 14px rgba(0,200,100,0.25)",
+                  }}
+                >
+                  <i className="fas fa-user-plus" style={{ marginRight: 5 }} /> Sign Up
+                </Button>
+              )}
             </NavItem>
           </Nav>
         </Collapse>

@@ -1,29 +1,18 @@
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Container, Row, Col, Card, CardBody, CardTitle, Button } from "reactstrap";
 import ExamplesNavbar    from "components/Navbars/ExamplesNavbar.js";
 import Footer            from "components/Footer/Footer.js";
-import StrandFlow        from "components/StrandFlow/StrandFlow";
+import FidgetCanvas      from "components/FidgetCanvas/FidgetCanvas";
+import SensoryChallenge  from "components/Grounding/SensoryChallenge";
 import SuccessToast      from "components/Toast/SuccessToast";
 import useReflections    from "hooks/useReflections";
 
+const SS_GREEN = "#00c864";
+
 // ── Exercise data ──────────────────────────────────────────────────────────────
 const EXERCISES = [
-  {
-    id: "5-4-3-2-1",
-    icon: "tim-icons icon-world",
-    title: "5-4-3-2-1 Grounding",
-    duration: "~2 min",
-    description: "Anchor yourself to the present moment by naming things you can sense right now.",
-    steps: [
-      "Name 5 things you can SEE around you.",
-      "Name 4 things you can physically FEEL (chair, floor, air).",
-      "Name 3 things you can HEAR right now.",
-      "Name 2 things you can SMELL (or like the smell of).",
-      "Name 1 thing you can TASTE.",
-    ],
-  },
   {
     id: "box-breathing",
     icon: "tim-icons icon-refresh-02",
@@ -70,7 +59,6 @@ const EXERCISES = [
 // ── Collapsible exercise card ──────────────────────────────────────────────────
 const ExerciseCard = ({ exercise, index }) => {
   const [expanded, setExpanded] = useState(false);
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -85,7 +73,7 @@ const ExerciseCard = ({ exercise, index }) => {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
               <div style={{ width: 44, height: 44, borderRadius: "50%", background: "rgba(0,200,100,0.12)", border: "1px solid rgba(0,200,100,0.3)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <i className={exercise.icon} style={{ color: "#00c864", fontSize: "1.2rem" }} />
+                <i className={exercise.icon} style={{ color: SS_GREEN, fontSize: "1.2rem" }} />
               </div>
               <div>
                 <CardTitle tag="h6" style={{ fontWeight: 700, marginBottom: "0.1rem" }}>{exercise.title}</CardTitle>
@@ -94,7 +82,6 @@ const ExerciseCard = ({ exercise, index }) => {
             </div>
             <i className={`tim-icons ${expanded ? "icon-minimal-up" : "icon-minimal-down"}`} style={{ opacity: 0.4, fontSize: "0.8rem" }} />
           </div>
-
           <motion.div
             initial={false}
             animate={{ height: expanded ? "auto" : 0, opacity: expanded ? 1 : 0 }}
@@ -118,31 +105,81 @@ const ExerciseCard = ({ exercise, index }) => {
   );
 };
 
+// ── Tab bar ────────────────────────────────────────────────────────────────────
+const TABS = [
+  { id: "canvas",    label: "Strand Flow",    icon: "tim-icons icon-tap-02" },
+  { id: "5-4-3-2-1", label: "5-4-3-2-1",     icon: "tim-icons icon-world" },
+  { id: "exercises", label: "Techniques",     icon: "tim-icons icon-book-bookmark" },
+];
+
+const TabBar = ({ active, onChange }) => (
+  <div style={{
+    display:        "flex",
+    gap:            "0.5rem",
+    marginBottom:   "1.5rem",
+    background:     "rgba(0,0,0,0.2)",
+    borderRadius:   "10px",
+    padding:        "0.3rem",
+  }}>
+    {TABS.map((tab) => (
+      <button
+        key={tab.id}
+        onClick={() => onChange(tab.id)}
+        style={{
+          flex:         1,
+          background:   active === tab.id ? "rgba(0,200,100,0.15)" : "transparent",
+          border:       active === tab.id ? "1px solid rgba(0,200,100,0.3)" : "1px solid transparent",
+          borderRadius: "7px",
+          color:        active === tab.id ? SS_GREEN : "rgba(255,255,255,0.45)",
+          cursor:       "pointer",
+          fontSize:     "0.75rem",
+          fontWeight:   active === tab.id ? 700 : 500,
+          padding:      "0.5rem 0.25rem",
+          transition:   "all 0.18s ease",
+          display:      "flex",
+          flexDirection: "column",
+          alignItems:   "center",
+          gap:          "0.25rem",
+        }}
+      >
+        <i className={tab.icon} style={{ fontSize: "0.9rem" }} />
+        {tab.label}
+      </button>
+    ))}
+  </div>
+);
+
 // ── Page ───────────────────────────────────────────────────────────────────────
 const GroundingPage = () => {
-  const navigate          = useNavigate();
+  const navigate           = useNavigate();
   const { saveReflection } = useReflections();
 
+  const [activeTab,     setActiveTab]     = useState("canvas");
   const [sessionLogged, setSessionLogged] = useState(false);
   const [toastVisible,  setToastVisible]  = useState(false);
   const [toastMessage,  setToastMessage]  = useState("");
 
-  // Called by StrandFlow when the 60s timer completes
   const handleSessionComplete = useCallback(async () => {
-    if (sessionLogged) return;   // guard against double-fire
+    if (sessionLogged) return;
     setSessionLogged(true);
     try {
-      await saveReflection("Completed a 60-second grounding session.", false);
+      await saveReflection("Completed 1 minute of sensory grounding.", false);
     } catch (err) {
       console.error("auto-log error:", err);
     }
   }, [saveReflection, sessionLogged]);
 
-  // "I'm Grounded" button
+  const handleSensoryComplete = useCallback(async () => {
+    try {
+      await saveReflection("Completed the 5-4-3-2-1 grounding challenge.", false);
+    } catch (err) {
+      console.error("sensory complete log error:", err);
+    }
+  }, [saveReflection]);
+
   const handleGrounded = () => {
     setToastMessage("You're grounded. Great work. 🌿");
     setToastVisible(true);
-    // Navigate after a short delay so the toast is visible briefly
     setTimeout(() => navigate("/dashboard"), 2200);
   };
 
@@ -150,16 +187,16 @@ const GroundingPage = () => {
     <>
       <ExamplesNavbar />
       <div className="wrapper">
-        <div className="page-header" style={{ minHeight: "100vh", paddingTop: "80px" }}>
+        <div className="page-header" style={{ minHeight: "100vh", paddingTop: "80px", paddingBottom: "100px" }}>
           <div className="squares square1" />
           <div className="squares square2" />
           <div className="squares square3" />
 
-          <Container>
+          <Container style={{ paddingBottom: "40px" }}>
             <Row className="justify-content-center">
               <Col lg="7" md="9">
 
-                {/* ── Page header ── */}
+                {/* Page header */}
                 <motion.div
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -167,74 +204,116 @@ const GroundingPage = () => {
                   style={{ textAlign: "center", marginBottom: "2rem" }}
                 >
                   <div style={{ width: 72, height: 72, borderRadius: "50%", background: "rgba(0,200,100,0.12)", border: "2px solid rgba(0,200,100,0.4)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1.25rem" }}>
-                    <i className="tim-icons icon-heart-2" style={{ color: "#00c864", fontSize: "2rem" }} />
+                    <i className="tim-icons icon-heart-2" style={{ color: SS_GREEN, fontSize: "2rem" }} />
                   </div>
                   <h2 style={{ fontWeight: 800, marginBottom: "0.5rem" }}>Grounding Exercises</h2>
                   <p className="text-muted" style={{ fontSize: "0.95rem", maxWidth: 420, margin: "0 auto" }}>
-                    You logged an urge — that took courage. Use the canvas below or pick an exercise.
+                    You logged an urge — that took courage. Choose a technique below.
                   </p>
                 </motion.div>
 
-                {/* ── Strand Flow canvas ── */}
-                <motion.div
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.1 }}
-                >
-                  <Card style={{ borderRadius: "8px", boxShadow: "0 8px 32px rgba(0,0,0,0.5)", marginBottom: "1.5rem", border: "1px solid rgba(0,200,100,0.15)" }}>
-                    <CardBody style={{ padding: "1.5rem 1.75rem" }}>
-                      {/* Section label */}
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "1rem" }}>
-                        <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#00c864" }} />
-                        <h6 style={{ fontWeight: 700, letterSpacing: "0.08em", fontSize: "0.75rem", textTransform: "uppercase", opacity: 0.55, margin: 0 }}>
-                          Strand Flow — Digital Fidget
-                        </h6>
-                      </div>
-                      <p className="text-muted" style={{ fontSize: "0.85rem", marginBottom: "1rem" }}>
-                        Draw freely. The timer runs while you're touching the canvas. Reach 60 seconds to complete the session.
-                      </p>
-
-                      <StrandFlow onSessionComplete={handleSessionComplete} />
-
-                      {/* Session logged confirmation */}
-                      {sessionLogged && (
-                        <motion.p
-                          initial={{ opacity: 0, y: 6 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          style={{ fontSize: "0.82rem", color: "#00c864", marginTop: "0.75rem", marginBottom: 0 }}
-                        >
-                          <i className="tim-icons icon-check-2" style={{ marginRight: 5 }} />
-                          Session logged to your reflections.
-                        </motion.p>
-                      )}
-                    </CardBody>
-                  </Card>
-                </motion.div>
-
-                {/* ── "I'm Grounded" CTA ── */}
+                {/* Tab bar */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.18 }}
+                  transition={{ duration: 0.35, delay: 0.08 }}
+                >
+                  <TabBar active={activeTab} onChange={setActiveTab} />
+                </motion.div>
+
+                {/* Tab content */}
+                <AnimatePresence mode="wait">
+                  {/* ── Tab: Strand Flow canvas ── */}
+                  {activeTab === "canvas" && (
+                    <motion.div
+                      key="canvas"
+                      initial={{ opacity: 0, x: -16 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{   opacity: 0, x: 16 }}
+                      transition={{ duration: 0.25 }}
+                    >
+                      <Card style={{ borderRadius: "8px", boxShadow: "0 8px 32px rgba(0,0,0,0.5)", marginBottom: "20px", border: "1px solid rgba(0,200,100,0.15)", overflow: "hidden" }}>
+                        <CardBody style={{ padding: "1.5rem 1.75rem" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "1rem" }}>
+                            <div style={{ width: 8, height: 8, borderRadius: "50%", background: SS_GREEN }} />
+                            <h6 style={{ fontWeight: 700, letterSpacing: "0.08em", fontSize: "0.75rem", textTransform: "uppercase", opacity: 0.55, margin: 0 }}>
+                              Fidget Canvas — Sensory Substitute
+                            </h6>
+                          </div>
+                          <p className="text-muted" style={{ fontSize: "0.85rem", marginBottom: "1rem" }}>
+                            Trace the glowing loop. Your hands stay busy, your mind stays present. 60 seconds earns a mindfulness badge.
+                          </p>
+                          <FidgetCanvas onSessionComplete={handleSessionComplete} />
+                          {sessionLogged && (
+                            <motion.p
+                              initial={{ opacity: 0, y: 6 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              style={{ fontSize: "0.82rem", color: SS_GREEN, marginTop: "0.75rem", marginBottom: 0 }}
+                            >
+                              <i className="tim-icons icon-check-2" style={{ marginRight: 5 }} />
+                              Logged to your reflections.
+                            </motion.p>
+                          )}
+                        </CardBody>
+                      </Card>
+                    </motion.div>
+                  )}
+
+                  {/* ── Tab: 5-4-3-2-1 Challenge ── */}
+                  {activeTab === "5-4-3-2-1" && (
+                    <motion.div
+                      key="sensory"
+                      initial={{ opacity: 0, x: -16 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{   opacity: 0, x: 16 }}
+                      transition={{ duration: 0.25 }}
+                    >
+                      <Card style={{ borderRadius: "8px", boxShadow: "0 8px 32px rgba(0,0,0,0.5)", marginBottom: "20px", border: "1px solid rgba(0,200,100,0.15)" }}>
+                        <CardBody style={{ padding: "1.5rem 1.75rem" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.5rem" }}>
+                            <div style={{ width: 8, height: 8, borderRadius: "50%", background: SS_GREEN }} />
+                            <h6 style={{ fontWeight: 700, letterSpacing: "0.08em", fontSize: "0.75rem", textTransform: "uppercase", opacity: 0.55, margin: 0 }}>
+                              5-4-3-2-1 Sensory Challenge
+                            </h6>
+                          </div>
+                          <p className="text-muted" style={{ fontSize: "0.85rem", marginBottom: "0.5rem" }}>
+                            Anchor yourself to the present moment using your five senses.
+                          </p>
+                          <SensoryChallenge onComplete={handleSensoryComplete} />
+                        </CardBody>
+                      </Card>
+                    </motion.div>
+                  )}
+
+                  {/* ── Tab: Other techniques ── */}
+                  {activeTab === "exercises" && (
+                    <motion.div
+                      key="exercises"
+                      initial={{ opacity: 0, x: -16 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{   opacity: 0, x: 16 }}
+                      transition={{ duration: 0.25 }}
+                    >
+                      {EXERCISES.map((ex, i) => (
+                        <ExerciseCard key={ex.id} exercise={ex} index={i} />
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* "I'm Grounded" CTA */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.2 }}
                   style={{ textAlign: "center", marginBottom: "2rem" }}
                 >
-                  <motion.div
-                    whileHover={{ scale: 1.04 }}
-                    whileTap={{ scale: 0.96 }}
-                    style={{ display: "inline-block" }}
-                  >
+                  <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} style={{ display: "inline-block" }}>
                     <Button
                       color="primary"
                       size="lg"
                       onClick={handleGrounded}
-                      style={{
-                        borderRadius: "8px",
-                        fontWeight: 700,
-                        letterSpacing: "0.05em",
-                        padding: "0.8rem 2.5rem",
-                        boxShadow: "0 6px 24px rgba(0,200,100,0.35)",
-                        fontSize: "1rem",
-                      }}
+                      style={{ borderRadius: "8px", fontWeight: 700, letterSpacing: "0.05em", padding: "0.8rem 2.5rem", boxShadow: "0 6px 24px rgba(0,200,100,0.35)", fontSize: "1rem" }}
                     >
                       <i className="tim-icons icon-check-2" style={{ marginRight: 8 }} />
                       I'm Grounded
@@ -245,22 +324,9 @@ const GroundingPage = () => {
                   </p>
                 </motion.div>
 
-                {/* ── Collapsible exercises ── */}
-                <h6 style={{ fontWeight: 700, letterSpacing: "0.08em", fontSize: "0.75rem", textTransform: "uppercase", opacity: 0.45, marginBottom: "1rem" }}>
-                  More Techniques
-                </h6>
-                {EXERCISES.map((ex, i) => (
-                  <ExerciseCard key={ex.id} exercise={ex} index={i} />
-                ))}
-
                 {/* Back link */}
-                <div style={{ textAlign: "center", marginTop: "1.5rem", paddingBottom: "2rem" }}>
-                  <Button
-                    color="primary"
-                    outline
-                    onClick={() => navigate("/dashboard")}
-                    style={{ borderRadius: "6px", fontWeight: 600 }}
-                  >
+                <div style={{ textAlign: "center", marginTop: "0.5rem", paddingBottom: "3rem" }}>
+                  <Button color="primary" outline onClick={() => navigate("/dashboard")} style={{ borderRadius: "6px", fontWeight: 600 }}>
                     <i className="tim-icons icon-minimal-left" style={{ marginRight: 6 }} />
                     Back to Dashboard
                   </Button>
@@ -273,12 +339,7 @@ const GroundingPage = () => {
         <Footer />
       </div>
 
-      {/* Success toast — rendered outside the scroll container */}
-      <SuccessToast
-        message={toastMessage}
-        visible={toastVisible}
-        onDismiss={() => setToastVisible(false)}
-      />
+      <SuccessToast message={toastMessage} visible={toastVisible} onDismiss={() => setToastVisible(false)} />
     </>
   );
 };

@@ -1,12 +1,15 @@
 /**
  * src/components/ReflectionHistory/ReflectionHistory.js
  *
- * Displays the last 5 reflections as ss-forest index cards.
- * Each card uses a typewriter entrance animation so the text
- * feels personal and meditative rather than snapping in.
+ * Scrollable feed of the user's last 5 reflections.
  *
- * If a reflection was saved alongside an urge log, a small
- * "Urge Logged" badge appears in ss-green.
+ * Layout:
+ *   - Outer wrapper: max-width 500px, centered, position: relative
+ *   - Scroll container: max-height 450px, overflow-y auto, custom scrollbar
+ *   - Fade mask: linear-gradient overlay on the outer wrapper so the
+ *     fade stays fixed at the bottom regardless of scroll position
+ *
+ * Reflections are ordered newest-first (Firestore query handles this).
  */
 
 import React, { useState, useEffect } from "react";
@@ -18,8 +21,6 @@ const SS_GREEN  = "#00c864";
 const SS_FOREST = "#0d2b1a";
 
 // ── Typewriter hook ────────────────────────────────────────────────────────────
-// Reveals `text` one character at a time at `speed` ms/char.
-// Starts only when `active` is true (triggered by IntersectionObserver).
 const useTypewriter = (text, speed = 18, active = false) => {
   const [displayed, setDisplayed] = useState("");
 
@@ -42,10 +43,8 @@ const useTypewriter = (text, speed = 18, active = false) => {
 const formatDate = (date) => {
   if (!date) return "";
   return date.toLocaleString("en-US", {
-    month: "short",
-    day:   "numeric",
-    hour:  "numeric",
-    minute: "2-digit",
+    month: "short", day: "numeric",
+    hour: "numeric", minute: "2-digit",
   });
 };
 
@@ -56,88 +55,62 @@ const ReflectionCard = ({ reflection, index }) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: index * 0.1 }}
-      // Start typewriter once the card has animated in
+      transition={{ duration: 0.3, delay: index * 0.08 }}
       onAnimationComplete={() => setVisible(true)}
+      style={{ marginBottom: "0.75rem" }}
     >
       <Card
         style={{
           background: SS_FOREST,
-          border: `1px solid rgba(0,200,100,0.18)`,
+          border: "1px solid rgba(0,200,100,0.18)",
           borderRadius: "8px",
-          boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
-          marginBottom: "1rem",
+          boxShadow: "0 2px 12px rgba(0,0,0,0.25)",
+          marginBottom: 0,   // spacing handled by motion.div above
         }}
       >
-        <CardBody style={{ padding: "1.25rem 1.5rem" }}>
-          {/* Header row: timestamp + optional badge */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: "0.75rem",
-              flexWrap: "wrap",
-              gap: "0.5rem",
-            }}
-          >
-            <span
-              style={{
-                fontSize: "0.75rem",
-                opacity: 0.45,
-                letterSpacing: "0.04em",
-              }}
-            >
+        <CardBody style={{ padding: "1rem 1.25rem" }}>
+          {/* Header: timestamp + badge */}
+          <div style={{
+            display: "flex", alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: "0.5rem",
+            flexWrap: "wrap", gap: "0.4rem",
+          }}>
+            <span style={{ fontSize: "0.72rem", opacity: 0.4, letterSpacing: "0.04em" }}>
               {formatDate(reflection.savedAt)}
             </span>
 
             {reflection.urgeLogged && (
-              <span
-                style={{
-                  fontSize: "0.68rem",
-                  fontWeight: 700,
-                  letterSpacing: "0.07em",
-                  textTransform: "uppercase",
-                  color: SS_GREEN,
-                  background: "rgba(0,200,100,0.1)",
-                  border: `1px solid rgba(0,200,100,0.3)`,
-                  borderRadius: "4px",
-                  padding: "0.15rem 0.5rem",
-                }}
-              >
-                <i className="tim-icons icon-heart-2" style={{ marginRight: 3, fontSize: "0.65rem" }} />
+              <span style={{
+                fontSize: "0.65rem", fontWeight: 700,
+                letterSpacing: "0.07em", textTransform: "uppercase",
+                color: SS_GREEN,
+                background: "rgba(0,200,100,0.1)",
+                border: "1px solid rgba(0,200,100,0.3)",
+                borderRadius: "4px", padding: "0.1rem 0.45rem",
+              }}>
+                <i className="tim-icons icon-heart-2" style={{ marginRight: 3, fontSize: "0.6rem" }} />
                 Urge Logged
               </span>
             )}
           </div>
 
           {/* Typewriter text */}
-          <p
-            style={{
-              fontSize: "0.92rem",
-              lineHeight: 1.65,
-              fontStyle: "italic",
-              opacity: 0.85,
-              marginBottom: 0,
-              minHeight: "1.4em",   // prevents layout jump before text starts
-            }}
-          >
+          <p style={{
+            fontSize: "0.88rem", lineHeight: 1.6,
+            fontStyle: "italic", opacity: 0.82,
+            marginBottom: 0, minHeight: "1.3em",
+          }}>
             {displayed}
-            {/* Blinking cursor while typing */}
             {visible && displayed.length < reflection.text.length && (
-              <span
-                style={{
-                  display: "inline-block",
-                  width: 2,
-                  height: "1em",
-                  background: SS_GREEN,
-                  marginLeft: 2,
-                  verticalAlign: "text-bottom",
-                  animation: "blink 0.7s step-end infinite",
-                }}
-              />
+              <span style={{
+                display: "inline-block", width: 2, height: "1em",
+                background: SS_GREEN, marginLeft: 2,
+                verticalAlign: "text-bottom",
+                animation: "blink 0.7s step-end infinite",
+              }} />
             )}
           </p>
           <style>{`@keyframes blink { 50% { opacity: 0; } }`}</style>
@@ -147,63 +120,108 @@ const ReflectionCard = ({ reflection, index }) => {
   );
 };
 
+// ── Section label ──────────────────────────────────────────────────────────────
+const SectionLabel = ({ children }) => (
+  <h6 style={{
+    fontWeight: 700, letterSpacing: "0.08em",
+    fontSize: "0.72rem", textTransform: "uppercase",
+    opacity: 0.5, marginBottom: "0.85rem",
+  }}>
+    {children}
+  </h6>
+);
+
 // ── Main component ─────────────────────────────────────────────────────────────
 const ReflectionHistory = () => {
   const { reflections, reflectionsLoading, reflectionsError } = useReflections();
+
+  const hasReflections = !reflectionsLoading && !reflectionsError && reflections.length > 0;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.28 }}
-      style={{ marginBottom: "1.5rem" }}
+      style={{
+        maxWidth: 500,
+        margin: "0 auto",
+        flexGrow: 0,
+      }}
     >
-      {/* Section label */}
-      <h6
-        style={{
-          fontWeight: 700,
-          letterSpacing: "0.08em",
-          fontSize: "0.75rem",
-          textTransform: "uppercase",
-          opacity: 0.55,
-          marginBottom: "1rem",
-        }}
-      >
-        Recent Reflections
-      </h6>
+      <SectionLabel>Recent Reflections</SectionLabel>
 
       {reflectionsLoading && (
-        <p className="text-muted" style={{ fontSize: "0.88rem" }}>
-          Loading…
-        </p>
+        <p className="text-muted" style={{ fontSize: "0.85rem" }}>Loading…</p>
       )}
 
       {reflectionsError && (
-        <p className="text-danger" style={{ fontSize: "0.88rem" }}>
-          {reflectionsError}
-        </p>
+        <p className="text-danger" style={{ fontSize: "0.85rem" }}>{reflectionsError}</p>
       )}
 
       {!reflectionsLoading && !reflectionsError && reflections.length === 0 && (
-        <Card
-          style={{
-            background: SS_FOREST,
-            border: "1px solid rgba(0,200,100,0.12)",
-            borderRadius: "8px",
-          }}
-        >
-          <CardBody style={{ padding: "1.25rem 1.5rem" }}>
-            <p className="text-muted" style={{ fontSize: "0.88rem", marginBottom: 0 }}>
-              No reflections yet. Write something in the "What's on your mind?" box above and hit Save Note.
+        <Card style={{ background: SS_FOREST, border: "1px solid rgba(0,200,100,0.12)", borderRadius: "8px" }}>
+          <CardBody style={{ padding: "1rem 1.25rem" }}>
+            <p className="text-muted" style={{ fontSize: "0.85rem", marginBottom: 0 }}>
+              No reflections yet. Write something above and hit Save Note.
             </p>
           </CardBody>
         </Card>
       )}
 
-      {!reflectionsLoading &&
-        reflections.map((r, i) => (
-          <ReflectionCard key={r.id} reflection={r} index={i} />
-        ))}
+      {hasReflections && (
+        /*
+          Outer wrapper: position relative so the fade overlay is anchored
+          to the bottom of this box, not the scrollable content inside.
+        */
+        <div style={{ position: "relative" }}>
+
+          {/* Scrollable feed */}
+          <div
+            className="reflection-scroll"
+            style={{
+              maxHeight:   450,
+              overflowY:   "auto",
+              overflowX:   "hidden",
+              paddingRight: 4,   // breathing room for the scrollbar
+              // Mask: content fades out over the bottom 60px
+              // The mask is on the scroll container itself so it clips
+              // the content as it scrolls under the fade zone.
+              WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 75%, transparent 100%)",
+              maskImage:       "linear-gradient(to bottom, black 0%, black 75%, transparent 100%)",
+            }}
+          >
+            {/* Reflections are already newest-first from Firestore (orderBy desc) */}
+            {reflections.map((r, i) => (
+              <ReflectionCard key={r.id} reflection={r} index={i} />
+            ))}
+
+            {/* Bottom spacer so the last card isn't hidden under the fade */}
+            <div style={{ height: 40 }} />
+          </div>
+
+          {/* "More below" hint — only shown when content overflows */}
+          {reflections.length >= 3 && (
+            <div style={{
+              position:       "absolute",
+              bottom:         0,
+              left:           0,
+              right:          0,
+              textAlign:      "center",
+              pointerEvents:  "none",
+              paddingBottom:  "0.25rem",
+            }}>
+              <span style={{
+                fontSize:      "0.65rem",
+                opacity:       0.3,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+              }}>
+                scroll for more
+              </span>
+            </div>
+          )}
+        </div>
+      )}
     </motion.div>
   );
 };

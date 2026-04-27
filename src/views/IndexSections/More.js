@@ -38,8 +38,14 @@ const More = () => (
             >
               <Button
                 className="btn-round"
-                color="primary"
-                style={{ borderRadius: "6px", fontWeight: 600 }}
+                style={{
+                  borderRadius: "6px",
+                  fontWeight: 600,
+                  background: "#FF4500",
+                  borderColor: "#FF4500",
+                  color: "#fff",
+                  boxShadow: "0 4px 16px rgba(255,69,0,0.35)",
+                }}
               >
                 <i className="fab fa-reddit" style={{ marginRight: "6px" }} />
                 {community.redditCta.label}

@@ -10,7 +10,7 @@
 
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button, Row, Col } from "reactstrap";
+import { Button } from "reactstrap";
 import useSupportFeed from "hooks/useSupportFeed";
 
 // ── Brand colours ──────────────────────────────────────────────────────────────
@@ -146,34 +146,29 @@ const LiveSupportFeed = () => {
   const { quotes, loading, error, refresh } = useSupportFeed();
 
   return (
-    <div style={{ marginTop: "3rem" }}>
+    // max-width prevents pancake stretching on wide monitors
+    <div style={{ marginTop: "1rem", maxWidth: 500, margin: "1rem auto 0" }}>
       {/* Section header + refresh button */}
       <div
         style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          marginBottom: "1.25rem",
+          marginBottom: "1rem",
           flexWrap: "wrap",
-          gap: "0.75rem",
+          gap: "0.6rem",
         }}
       >
         <div>
-          <h4 style={{ fontWeight: 700, marginBottom: "0.2rem" }}>
+          <h5 style={{ fontWeight: 700, marginBottom: "0.15rem", fontSize: "0.95rem" }}>
             Daily Inspiration
-          </h4>
-          <p
-            className="text-muted"
-            style={{ fontSize: "0.85rem", marginBottom: 0 }}
-          >
+          </h5>
+          <p className="text-muted" style={{ fontSize: "0.8rem", marginBottom: 0 }}>
             Words to carry with you today.
           </p>
         </div>
 
-        <motion.div
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.96 }}
-        >
+        <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
           <Button
             color="primary"
             outline
@@ -193,7 +188,7 @@ const LiveSupportFeed = () => {
             <i
               className="tim-icons icon-refresh-02"
               style={{
-                marginRight: 6,
+                marginRight: 5,
                 display: "inline-block",
                 animation: loading ? "spin 0.8s linear infinite" : "none",
               }}
@@ -206,48 +201,33 @@ const LiveSupportFeed = () => {
 
       {/* Error state */}
       {error && !loading && (
-        <p className="text-danger" style={{ fontSize: "0.88rem" }}>
+        <p className="text-danger" style={{ fontSize: "0.85rem" }}>
           {error}{" "}
           <button
             onClick={refresh}
-            style={{
-              background: "none",
-              border: "none",
-              color: SS_GREEN,
-              cursor: "pointer",
-              textDecoration: "underline",
-              padding: 0,
-              fontSize: "inherit",
-            }}
+            style={{ background: "none", border: "none", color: SS_GREEN, cursor: "pointer", textDecoration: "underline", padding: 0, fontSize: "inherit" }}
           >
             Try again
           </button>
         </p>
       )}
 
-      {/* Cards grid */}
-      <Row>
+      {/* Cards — stacked vertically in right column (no Col grid needed) */}
+      <div>
         {loading
-          ? // Skeleton placeholders — same layout as real cards
-            [0, 1, 2].map((i) => (
-              <Col md="4" key={i} style={{ marginBottom: "1.25rem" }}>
+          ? [0, 1, 2].map((i) => (
+              <div key={i} style={{ marginBottom: "0.85rem" }}>
                 <SkeletonCard />
-              </Col>
+              </div>
             ))
-          : // Real quote cards with AnimatePresence for smooth swap on refresh
-            quotes.map((q, i) => (
-              <Col md="4" key={q.id} style={{ marginBottom: "1.25rem" }}>
+          : quotes.map((q, i) => (
+              <div key={q.id} style={{ marginBottom: "0.85rem" }}>
                 <AnimatePresence mode="wait">
-                  <QuoteCard
-                    key={q.id}
-                    quote={q.quote}
-                    author={q.author}
-                    index={i}
-                  />
+                  <QuoteCard key={q.id} quote={q.quote} author={q.author} index={i} />
                 </AnimatePresence>
-              </Col>
+              </div>
             ))}
-      </Row>
+      </div>
     </div>
   );
 };

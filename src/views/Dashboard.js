@@ -1,23 +1,69 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { motion } from "framer-motion";
-import {
-  Container, Row, Col,
-  Card, CardBody, CardTitle,
-  Button,
-} from "reactstrap";
-import { auth } from "firebaseConfig";
-import { useAuth }          from "context/AuthContext";
-import useUrgeLog           from "hooks/useUrgeLog";
-import useReflections       from "hooks/useReflections";
-import VibeInput            from "components/VibeInput/VibeInput";
-import UrgeTracker          from "components/UrgeTracker/UrgeTracker";
-import InsightsSection      from "components/Insights/InsightsSection";
-import ReflectionHistory    from "components/ReflectionHistory/ReflectionHistory";
-import ExamplesNavbar       from "components/Navbars/ExamplesNavbar.js";
-import Footer               from "components/Footer/Footer.js";
+import { Container, Row, Col, Button } from "reactstrap";
+import { auth }           from "firebaseConfig";
+import { useAuth }        from "context/AuthContext";
+import useUrgeLog         from "hooks/useUrgeLog";
+import useReflections     from "hooks/useReflections";
+import { mindfulStreak }  from "utils/logAnalytics";
+import VibeInput          from "components/VibeInput/VibeInput";
+import UrgeTracker        from "components/UrgeTracker/UrgeTracker";
+import InsightsSection    from "components/Insights/InsightsSection";
+import ReflectionHistory  from "components/ReflectionHistory/ReflectionHistory";
+import LiveSupportFeed    from "components/LiveSupportFeed/LiveSupportFeed";
+import FloatingActionButton from "components/FAB/FloatingActionButton";
+import ExamplesNavbar     from "components/Navbars/ExamplesNavbar.js";
+import Footer             from "components/Footer/Footer.js";
 
+// ── Shared glassmorphism card style ───────────────────────────────────────────
+export const glassCard = {
+  background:    "rgba(13, 43, 26, 0.7)",
+  backdropFilter: "blur(12px)",
+  WebkitBackdropFilter: "blur(12px)",
+  border:        "1px solid rgba(0, 200, 100, 0.15)",
+  borderRadius:  "10px",
+  boxShadow:     "0 4px 24px rgba(0,0,0,0.4)",
+  marginBottom:  "1.25rem",
+  transition:    "box-shadow 0.2s ease, border-color 0.2s ease",
+};
+
+// Hover variant — applied via onMouseEnter/Leave
+const glassCardHover = {
+  boxShadow:   "0 6px 32px rgba(0,200,100,0.12), 0 4px 24px rgba(0,0,0,0.4)",
+  borderColor: "rgba(0,200,100,0.28)",
+};
+
+// ── Section label ─────────────────────────────────────────────────────────────
+const SectionLabel = ({ children }) => (
+  <h6 style={{
+    fontWeight: 700, letterSpacing: "0.08em", fontSize: "0.72rem",
+    textTransform: "uppercase", opacity: 0.45, marginBottom: "1rem",
+  }}>
+    {children}
+  </h6>
+);
+
+// ── Glass card wrapper ────────────────────────────────────────────────────────
+const GlassCard = ({ children, style = {}, hover = true, padding = "1.5rem 1.75rem" }) => {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div
+      style={{
+        ...glassCard,
+        ...(hover && hovered ? glassCardHover : {}),
+        ...style,
+      }}
+      onMouseEnter={() => hover && setHovered(true)}
+      onMouseLeave={() => hover && setHovered(false)}
+    >
+      <div style={{ padding }}>{children}</div>
+    </div>
+  );
+};
+
+// ── Format log date ───────────────────────────────────────────────────────────
 const formatLogDate = (date) => {
   if (!date) return "—";
   return date.toLocaleString("en-US", {
@@ -26,16 +72,110 @@ const formatLogDate = (date) => {
   });
 };
 
+// ── Streak badge ──────────────────────────────────────────────────────────────
+const StreakBadge = ({ logs }) => {
+  const streak = mindfulStreak(logs);
+  const has    = streak.value !== null;
+  return (
+    <GlassCard style={{ border: has ? "1px solid rgba(0,200,100,0.3)" : glassCard.border }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        <div style={{
+          width: 48, height: 48, borderRadius: "50%", flexShrink: 0,
+          background: "rgba(0,200,100,0.1)", border: "2px solid rgba(0,200,100,0.3)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          <span style={{ fontSize: "1.4rem" }}>{has ? "🌿" : "💚"}</span>
+        </div>
+        <div>
+          <SectionLabel>Safe Streak</SectionLabel>
+          <p style={{ fontWeight: 600, fontSize: "0.92rem", marginBottom: 0, lineHeight: 1.4 }}>
+            {streak.label}
+          </p>
+        </div>
+      </div>
+    </GlassCard>
+  );
+};
+
+// ── Recent urge log list ──────────────────────────────────────────────────────
+const RecentLogs = ({ logs, loading }) => (
+  <GlassCard>
+    <SectionLabel>Recent Urge Logs</SectionLabel>
+    {loading && <p className="text-muted" style={{ fontSize: "0.85rem" }}>Loading…</p>}
+    {!loading && logs.length === 0 && (
+      <p className="text-muted" style={{ fontSize: "0.85rem", marginBottom: 0 }}>
+        No urges logged yet.
+      </p>
+    )}
+    {!loading && logs.length > 0 && (
+      <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+        {logs.slice(0, 10).map((log, i) => (
+          <li key={log.id} style={{
+            display: "flex", alignItems: "flex-start", gap: "0.75rem",
+            padding: "0.6rem 0",
+            borderBottom: i < Math.min(logs.length, 10) - 1
+              ? "1px solid rgba(255,255,255,0.05)" : "none",
+          }}>
+            <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#00c864", flexShrink: 0, marginTop: "0.4rem" }} />
+            <div style={{ flex: 1 }}>
+              <span style={{ fontSize: "0.85rem", opacity: 0.75 }}>{formatLogDate(log.loggedAt)}</span>
+              {log.note && (
+                <p style={{ fontSize: "0.8rem", opacity: 0.45, fontStyle: "italic", marginBottom: 0, marginTop: "0.15rem" }}>
+                  {log.note}
+                </p>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    )}
+  </GlassCard>
+);
+
+// ── Quick-action cards ────────────────────────────────────────────────────────
+const QuickActions = ({ navigate }) => (
+  <Row style={{ margin: 0 }}>
+    {[
+      { icon: "tim-icons icon-spaceship", title: "Grounding", body: "Ride out an urge right now.", href: "/grounding", accent: true },
+      { icon: "tim-icons icon-book-bookmark", title: "Resources", body: "Articles and guides.", href: "/landing-page" },
+    ].map(({ icon, title, body, href, accent }) => (
+      <Col xs="6" key={title} style={{ paddingLeft: "0.4rem", paddingRight: "0.4rem" }}>
+        <div
+          onClick={() => navigate(href)}
+          style={{
+            ...glassCard,
+            cursor: "pointer",
+            border: accent ? "1px solid rgba(0,200,100,0.28)" : glassCard.border,
+            boxShadow: accent ? "0 4px 20px rgba(0,200,100,0.12)" : glassCard.boxShadow,
+          }}
+        >
+          <div style={{ padding: "1.1rem" }}>
+            <div style={{
+              width: 36, height: 36, borderRadius: "50%", marginBottom: "0.7rem",
+              background: accent ? "rgba(0,200,100,0.12)" : "rgba(255,255,255,0.05)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <i className={icon} style={{ color: accent ? "#00c864" : "rgba(255,255,255,0.5)", fontSize: "1rem" }} />
+            </div>
+            <p style={{ fontWeight: 700, fontSize: "0.85rem", marginBottom: "0.2rem" }}>{title}</p>
+            <p className="text-muted" style={{ fontSize: "0.78rem", marginBottom: 0 }}>{body}</p>
+          </div>
+        </div>
+      </Col>
+    ))}
+  </Row>
+);
+
+// ── Dashboard ─────────────────────────────────────────────────────────────────
 const Dashboard = () => {
   const { currentUser }             = useAuth();
   const { recentLogs, logsLoading } = useUrgeLog();
   const { saveReflection }          = useReflections();
   const navigate                    = useNavigate();
 
-  // ── Vibe / reflection state ──────────────────────────────────────────────────
-  const [vibe,        setVibe]        = useState("");
-  const [noteSaving,  setNoteSaving]  = useState(false);
-  const [noteSaved,   setNoteSaved]   = useState(false);
+  const [vibe,       setVibe]       = useState("");
+  const [noteSaving, setNoteSaving] = useState(false);
+  const [noteSaved,  setNoteSaved]  = useState(false);
 
   const firstName = currentUser?.displayName?.split(" ")[0] ?? "there";
 
@@ -44,7 +184,6 @@ const Dashboard = () => {
     catch (err) { console.error("Sign out error:", err); }
   };
 
-  // Called by VibeInput's "Save Note" button — standalone reflection
   const handleSaveNote = async () => {
     if (!vibe.trim()) return;
     setNoteSaving(true);
@@ -53,194 +192,190 @@ const Dashboard = () => {
       setVibe("");
       setNoteSaved(true);
       setTimeout(() => setNoteSaved(false), 3000);
-    } catch (err) {
-      console.error("saveReflection error:", err);
-    } finally {
-      setNoteSaving(false);
-    }
+    } catch (err) { console.error("saveReflection error:", err); }
+    finally { setNoteSaving(false); }
   };
 
-  // Called by UrgeTracker after a successful urge log
-  // If there's text in the vibe input, save it as a reflection tagged urgeLogged=true
   const handleAfterUrgeLog = async () => {
     if (!vibe.trim()) return;
-    try {
-      await saveReflection(vibe, true);
-    } catch (err) {
-      console.error("saveReflection (urge) error:", err);
-    } finally {
-      setVibe("");
-    }
+    try { await saveReflection(vibe, true); }
+    catch (err) { console.error("saveReflection (urge) error:", err); }
+    finally { setVibe(""); }
   };
 
   return (
     <>
       <ExamplesNavbar />
-      <div className="wrapper">
-        <div className="page-header" style={{ minHeight: "100vh", paddingTop: "80px" }}>
-          <div className="squares square1" />
-          <div className="squares square2" />
-          <div className="squares square3" />
 
-          <Container>
-            <Row className="justify-content-center">
-              <Col lg="8">
+      {/*
+        ── Outer shell ──────────────────────────────────────────────────────────
+        min-height: 100vh keeps the forest background full-screen.
+        overflow-y: auto lets the content scroll naturally.
+        padding-top: 80px clears the fixed navbar.
+      */}
+      <div style={{
+        minHeight:    "100vh",
+        overflowY:    "auto",
+        background:   "#0d2b1a",
+        paddingTop:   "80px",
+        paddingBottom: "3rem",
+      }}>
+        {/* Subtle radial glow behind content */}
+        <div style={{
+          position:   "fixed",
+          inset:      0,
+          background: "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,200,100,0.06) 0%, transparent 70%)",
+          pointerEvents: "none",
+          zIndex:     0,
+        }} />
 
-                {/* ── Welcome header ── */}
-                <motion.div
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4 }}
-                >
-                  <Card style={{ borderRadius: "8px", boxShadow: "0 8px 32px rgba(0,0,0,0.45)", marginBottom: "1.5rem" }}>
-                    <CardBody style={{ padding: "1.75rem 2rem" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.75rem" }}>
-                        <div>
-                          <CardTitle tag="h3" style={{ fontWeight: 800, marginBottom: "0.25rem" }}>
-                            Hey, {firstName} 👋
-                          </CardTitle>
-                          <p className="text-muted" style={{ fontSize: "0.88rem", marginBottom: 0 }}>
-                            {currentUser?.email}
-                          </p>
-                        </div>
-                        <Button
-                          color="primary" outline size="sm"
-                          onClick={handleSignOut}
-                          style={{ borderRadius: "6px", fontWeight: 600, whiteSpace: "nowrap" }}
-                        >
-                          <i className="tim-icons icon-button-power" style={{ marginRight: 5 }} />
-                          Sign Out
-                        </Button>
-                      </div>
-                    </CardBody>
-                  </Card>
-                </motion.div>
+        <Container style={{ position: "relative", zIndex: 1 }}>
 
-                {/* ── Vibe input + UrgeTracker ── */}
-                <motion.div
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.08 }}
-                >
-                  <Card style={{ borderRadius: "8px", boxShadow: "0 8px 32px rgba(0,0,0,0.45)", marginBottom: "1.5rem" }}>
-                    <CardBody style={{ padding: "1.75rem 2rem" }}>
-                      {/* "What's on your mind?" lives above the tracker button */}
-                      <VibeInput
-                        value={vibe}
-                        onChange={setVibe}
-                        onSaveNote={handleSaveNote}
-                        saving={noteSaving}
-                        saved={noteSaved}
-                      />
-                      <UrgeTracker
-                        note={vibe}
-                        onAfterLog={handleAfterUrgeLog}
-                      />
-                    </CardBody>
-                  </Card>
-                </motion.div>
+          {/* ── Welcome header ── */}
+          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+            <GlassCard padding="1.4rem 1.75rem" hover={false}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.75rem" }}>
+                <div>
+                  <h3 style={{ fontWeight: 800, marginBottom: "0.2rem" }}>Hey, {firstName} 👋</h3>
+                  <p className="text-muted" style={{ fontSize: "0.85rem", marginBottom: 0 }}>{currentUser?.email}</p>
+                </div>
+                <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
+                  <Link to="/grounding" style={{ textDecoration: "none" }}>
+                    <Button color="primary" size="sm" style={{ borderRadius: "6px", fontWeight: 600 }}>
+                      <i className="tim-icons icon-spaceship" style={{ marginRight: 5 }} />
+                      Grounding
+                    </Button>
+                  </Link>
+                  <Button color="primary" outline size="sm" onClick={handleSignOut}
+                    style={{ borderRadius: "6px", fontWeight: 600, whiteSpace: "nowrap" }}>
+                    <i className="tim-icons icon-button-power" style={{ marginRight: 5 }} />
+                    Sign Out
+                  </Button>
+                </div>
+              </div>
+            </GlassCard>
+          </motion.div>
 
-                {/* ── Insights: streak + charts ── */}
+          {/* ── 2-column grid ── */}
+          <Row>
+
+            {/* ════════════════════════════════════════════════════════════════
+                LEFT COLUMN — 65%
+                Tracker (sticky) + Insights charts
+            ════════════════════════════════════════════════════════════════ */}
+            <Col lg="8" style={{ paddingRight: "0.75rem" }}>
+
+              {/*
+                Sticky tracker wrapper.
+                position: sticky + top: 90px keeps the Log Urge button
+                visible as the user scrolls through charts and history.
+              */}
+              <motion.div
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.06 }}
+                style={{ position: "sticky", top: "90px", zIndex: 10 }}
+              >
+                <GlassCard padding="1.5rem 1.75rem">
+                  <VibeInput
+                    value={vibe}
+                    onChange={setVibe}
+                    onSaveNote={handleSaveNote}
+                    saving={noteSaving}
+                    saved={noteSaved}
+                  />
+                  <UrgeTracker note={vibe} onAfterLog={handleAfterUrgeLog} />
+                </GlassCard>
+              </motion.div>
+
+              {/* Charts — scrolls normally below the sticky tracker */}
+              <motion.div
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.14 }}
+              >
                 <InsightsSection logs={recentLogs} logsLoading={logsLoading} />
+              </motion.div>
 
-                {/* ── Reflection history ── */}
-                <ReflectionHistory />
+              {/* Recent urge log list */}
+              <motion.div
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+              >
+                <RecentLogs logs={recentLogs} loading={logsLoading} />
+              </motion.div>
 
-                {/* ── Recent urge log list ── */}
-                <motion.div
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.2 }}
-                >
-                  <Card style={{ borderRadius: "8px", boxShadow: "0 4px 16px rgba(0,0,0,0.35)", marginBottom: "1.5rem" }}>
-                    <CardBody style={{ padding: "1.5rem 2rem" }}>
-                      <h6 style={{ fontWeight: 700, letterSpacing: "0.08em", fontSize: "0.75rem", textTransform: "uppercase", opacity: 0.55, marginBottom: "1rem" }}>
-                        Recent Urge Logs
-                      </h6>
+            </Col>
 
-                      {logsLoading && <p className="text-muted" style={{ fontSize: "0.88rem" }}>Loading…</p>}
+            {/* ════════════════════════════════════════════════════════════════
+                RIGHT COLUMN — 35%
+                Streak + Reflections + Live Feed + Quick Actions
+            ════════════════════════════════════════════════════════════════ */}
+            <Col lg="4" style={{ paddingLeft: "0.75rem" }}>
 
-                      {!logsLoading && recentLogs.length === 0 && (
-                        <p className="text-muted" style={{ fontSize: "0.88rem", marginBottom: 0 }}>
-                          No urges logged yet. Hit the button above when you feel one coming on.
-                        </p>
-                      )}
+              {/* Streak badge */}
+              <motion.div
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+              >
+                <StreakBadge logs={recentLogs} />
+              </motion.div>
 
-                      {!logsLoading && recentLogs.length > 0 && (
-                        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                          {recentLogs.slice(0, 10).map((log, i) => (
-                            <li
-                              key={log.id}
-                              style={{
-                                display: "flex",
-                                alignItems: "flex-start",
-                                gap: "0.75rem",
-                                padding: "0.65rem 0",
-                                borderBottom: i < Math.min(recentLogs.length, 10) - 1
-                                  ? "1px solid rgba(255,255,255,0.06)"
-                                  : "none",
-                              }}
-                            >
-                              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#00c864", flexShrink: 0, marginTop: "0.35rem" }} />
-                              <div style={{ flex: 1 }}>
-                                <span style={{ fontSize: "0.88rem", opacity: 0.8 }}>
-                                  {formatLogDate(log.loggedAt)}
-                                </span>
-                                {log.note && (
-                                  <p style={{ fontSize: "0.82rem", opacity: 0.5, fontStyle: "italic", marginBottom: 0, marginTop: "0.2rem" }}>
-                                    {log.note}
-                                  </p>
-                                )}
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </CardBody>
-                  </Card>
-                </motion.div>
+              {/* Reflection history */}
+              <motion.div
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.18 }}
+              >
+                <GlassCard>
+                  <ReflectionHistory />
+                </GlassCard>
+              </motion.div>
 
-                {/* ── Quick-action cards ── */}
-                <motion.div
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.28 }}
-                >
-                  <Row>
-                    {[
-                      { icon: "tim-icons icon-spaceship", title: "Grounding Exercises", body: "Techniques to help you ride out an urge in the moment.", href: "/grounding", accent: true },
-                      { icon: "tim-icons icon-book-bookmark", title: "Resources", body: "Articles and guides on managing trichotillomania.", href: "/landing-page" },
-                    ].map(({ icon, title, body, href, accent }) => (
-                      <Col md="6" key={title}>
-                        <Card
-                          style={{
-                            borderRadius: "8px",
-                            boxShadow: accent ? "0 4px 20px rgba(0,200,100,0.2)" : "0 4px 16px rgba(0,0,0,0.35)",
-                            cursor: "pointer",
-                            marginBottom: "1.5rem",
-                            border: accent ? "1px solid rgba(0,200,100,0.25)" : "none",
-                          }}
-                          onClick={() => navigate(href)}
-                        >
-                          <CardBody style={{ padding: "1.5rem" }}>
-                            <div style={{ width: 40, height: 40, borderRadius: "50%", background: accent ? "rgba(0,200,100,0.15)" : "rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "0.85rem" }}>
-                              <i className={icon} style={{ color: accent ? "#00c864" : "inherit", fontSize: "1.1rem" }} />
-                            </div>
-                            <CardTitle tag="h6" style={{ fontWeight: 700, marginBottom: "0.35rem" }}>{title}</CardTitle>
-                            <p className="text-muted" style={{ fontSize: "0.85rem", marginBottom: 0 }}>{body}</p>
-                          </CardBody>
-                        </Card>
-                      </Col>
-                    ))}
-                  </Row>
-                </motion.div>
+              {/* Live support feed — stacked vertically in right column */}
+              <motion.div
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.24 }}
+              >
+                <GlassCard>
+                  <LiveSupportFeed />
+                </GlassCard>
+              </motion.div>
 
-              </Col>
-            </Row>
-          </Container>
-        </div>
-        <Footer />
+              {/* Quick actions */}
+              <motion.div
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+              >
+                <QuickActions navigate={navigate} />
+              </motion.div>
+
+            </Col>
+          </Row>
+          {/* ── Disclaimer ── */}
+          <p style={{
+            textAlign:    "center",
+            fontSize:     "0.72rem",
+            color:        "rgba(255,255,255,0.28)",
+            marginTop:    "2rem",
+            marginBottom: 0,
+            lineHeight:   1.6,
+            padding:      "0 1rem",
+          }}>
+            StrandSmart is a peer-support tool. Not a substitute for professional medical advice.
+          </p>
+
+        </Container>
       </div>
+
+      <Footer />
+
+      {/* FAB — persists over all dashboard content */}
+      <FloatingActionButton />
     </>
   );
 };

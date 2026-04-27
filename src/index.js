@@ -8,12 +8,15 @@ import "assets/scss/blk-design-system-react.scss";
 import "assets/demo/demo.css";
 import "assets/css/strandsmart-overrides.css";
 
-import { AuthProvider } from "context/AuthContext";
-import ProtectedRoute   from "components/ProtectedRoute";
+import { AuthProvider }    from "context/AuthContext";
+import { PrivacyProvider } from "context/PrivacyContext";
+import ProtectedRoute      from "components/ProtectedRoute";
 
 import Index        from "views/Index.js";
 import Dashboard    from "views/Dashboard.js";
 import GroundingPage from "views/GroundingPage.js";
+import ResourcesPage from "views/ResourcesPage.js";
+import LearnMorePage from "views/LearnMorePage.js";
 import AboutPage    from "views/examples/AboutPage.js";
 import LandingPage  from "views/examples/LandingPage.js";
 import RegisterPage from "views/examples/RegisterPage.js";
@@ -25,11 +28,14 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter>
     <AuthProvider>
+      <PrivacyProvider>
       <Routes>
         {/* Public routes */}
         <Route path="/"              element={<Index />} />
         <Route path="/components"    element={<Index />} />
         <Route path="/landing-page"  element={<LandingPage />} />
+        <Route path="/resources"     element={<ResourcesPage />} />
+        <Route path="/learn-more"    element={<LearnMorePage />} />
         <Route path="/register-page" element={<RegisterPage />} />
         <Route path="/login-page"    element={<LoginPage />} />
         <Route path="/profile-page"  element={<ProfilePage />} />
@@ -56,6 +62,7 @@ root.render(
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      </PrivacyProvider>
     </AuthProvider>
   </BrowserRouter>
 );

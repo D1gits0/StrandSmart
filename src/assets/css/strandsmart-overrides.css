@@ -2,6 +2,21 @@
    Strandsmart UI Overrides — Premium Green Theme
    ============================================================ */
 
+/* ── CSS custom properties — default (green) theme ──────────────────────────
+   PrivacyContext swaps these at runtime when Discreet Mode is toggled.
+   All theme-sensitive inline styles should reference var(--ss-green) etc.
+   ─────────────────────────────────────────────────────────────────────────── */
+:root {
+  --ss-green:         #00c864;
+  --ss-green-glow:    rgba(0, 200, 100, 0.25);
+  --ss-forest:        #0d2b1a;
+  --ss-forest-card:   rgba(13, 43, 26, 0.7);
+  --ss-accent-border: rgba(0, 200, 100, 0.15);
+}
+
+/* Discreet mode: neutral blue-gray palette applied via JS on :root */
+/* (values set dynamically by PrivacyContext — no class needed) */
+
 /* --- Border radius: square-modern (6px instead of pill) --- */
 .btn,
 .btn-round {
@@ -105,4 +120,148 @@ input,
   font-weight: 600;
   letter-spacing: 0.04em;
   padding: 0.45rem 1.25rem !important;
+}
+
+/* --- Dashboard: override BLK page-header on the dashboard route --- */
+.dashboard-shell {
+  min-height: 100vh;
+  overflow-y: auto;
+  background: #0d2b1a;
+  padding-top: 80px;
+  padding-bottom: 3rem;
+}
+
+/* Ensure sticky tracker doesn't get clipped by overflow:hidden ancestors */
+.tracker-sticky {
+  position: sticky;
+  top: 90px;
+  z-index: 10;
+}
+
+/* ── Green theme enforcement ─────────────────────────────────────────────────
+   Override any BLK-theme gray/blue that bleeds through on cards, inputs,
+   and form controls inside the dashboard and grounding pages.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* BLK uses bg-info (blue) for scrolled navbar — keep it forest-green */
+.navbar.bg-info {
+  background-color: rgba(13, 43, 26, 0.95) !important;
+}
+
+/* Card backgrounds inside the dashboard shell — enforce forest green */
+.dashboard-shell .card,
+.grounding-shell .card {
+  background: rgba(13, 43, 26, 0.7) !important;
+  border-color: rgba(0, 200, 100, 0.15) !important;
+}
+
+/* Input focus rings — replace BLK blue with ss-green */
+.form-control:focus,
+.input-group-focus .form-control,
+.input-group-focus .input-group-text {
+  border-color: #00c864 !important;
+  box-shadow: 0 0 0 3px rgba(0, 200, 100, 0.12) !important;
+}
+
+/* Input group text (icon boxes) — match forest background */
+.input-group-text {
+  background: rgba(13, 43, 26, 0.6) !important;
+  border-color: rgba(0, 200, 100, 0.18) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* ── Custom scrollbar — 8px dark-green ───────────────────────────────────────
+   Webkit (Chrome, Safari, Edge) scrollbar styling.
+   Firefox uses scrollbar-color / scrollbar-width.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 200, 100, 0.3) #0d2b1a;
+}
+
+/* Webkit */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0d2b1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 200, 100, 0.3);
+  border-radius: 4px;
+  border: 2px solid #0d2b1a;   /* creates inset padding effect */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 200, 100, 0.55);
+}
+
+::-webkit-scrollbar-corner {
+  background: #0d2b1a;
+}
+
+/* ── Reddit brand orange — only non-green pop colour ─────────────────────────
+   Applied to any element with data-reddit or the .btn-reddit class.
+   The More.js Reddit button uses inline style; this covers any future usage.
+   ─────────────────────────────────────────────────────────────────────────── */
+.btn-reddit,
+[data-reddit] {
+  background-color: #FF4500 !important;
+  border-color:     #FF4500 !important;
+  color:            #fff    !important;
+  box-shadow:       0 4px 14px rgba(255, 69, 0, 0.3) !important;
+}
+
+.btn-reddit:hover,
+[data-reddit]:hover {
+  background-color: #e03d00 !important;
+  border-color:     #e03d00 !important;
+  box-shadow:       0 6px 20px rgba(255, 69, 0, 0.4) !important;
+}
+
+/* ── Right-column flex fix ───────────────────────────────────────────────────
+   Prevents Bootstrap columns from tall-stretching cards to match
+   the height of the adjacent left column.
+   ─────────────────────────────────────────────────────────────────────────── */
+.col-lg-4 {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.col-lg-4 > * {
+  flex-grow: 0;
+}
+
+/* ── Reflection feed scrollbar ───────────────────────────────────────────────
+   Scoped to .reflection-scroll so it doesn't override the global scrollbar.
+   8px wide, ss-forest track, ss-green thumb at 0.2 opacity.
+   ─────────────────────────────────────────────────────────────────────────── */
+.reflection-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 200, 100, 0.2) #0d2b1a;
+}
+
+.reflection-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.reflection-scroll::-webkit-scrollbar-track {
+  background:    #0d2b1a;
+  border-radius: 4px;
+}
+
+.reflection-scroll::-webkit-scrollbar-thumb {
+  background:    rgba(0, 200, 100, 0.2);
+  border-radius: 4px;
+  border:        2px solid #0d2b1a;
+}
+
+.reflection-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 200, 100, 0.45);
 }
