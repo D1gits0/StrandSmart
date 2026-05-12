@@ -11,6 +11,7 @@ import "assets/css/strandsmart-overrides.css";
 import { AuthProvider }    from "context/AuthContext";
 import { PrivacyProvider } from "context/PrivacyContext";
 import ProtectedRoute      from "components/ProtectedRoute";
+import DetectionOverlay    from "components/DetectionOverlay/DetectionOverlay";
 
 import Index        from "views/Index.js";
 import Dashboard    from "views/Dashboard.js";
@@ -29,6 +30,8 @@ root.render(
   <BrowserRouter>
     <AuthProvider>
       <PrivacyProvider>
+      {/* CV detection overlay — renders nothing when backend is offline */}
+      <DetectionOverlay />
       <Routes>
         {/* Public routes */}
         <Route path="/"              element={<Index />} />

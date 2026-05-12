@@ -1,0 +1,15 @@
+# Python virtual environments
+.venv*/
+venv/
+env/
+
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+
+# Detection log (runtime data, not source)
+detections.log
+
+# OS
+.DS_Store
+Thumbs.db

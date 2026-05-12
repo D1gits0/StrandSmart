@@ -1,0 +1,8 @@
+{
+  "distance_threshold": 3.0,
+  "alert_duration_seconds": 2.5,
+  "confidence_base": 0.87,
+  "face_mesh_eyebrow_points": [55, 65, 66, 285, 295, 296],
+  "frame_log_interval": 1,
+  "log_file": "detections.log"
+}
