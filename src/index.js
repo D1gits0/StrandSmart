@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -14,6 +14,8 @@ import ProtectedRoute      from "components/ProtectedRoute";
 import DetectionOverlay    from "components/DetectionOverlay/DetectionOverlay";
 
 import Index        from "views/Index.js";
+import TermsPage    from "views/TermsPage.js";
+import PrivacyPage  from "views/PrivacyPage.js";
 import Dashboard    from "views/Dashboard.js";
 import GroundingPage from "views/GroundingPage.js";
 import ResourcesPage from "views/ResourcesPage.js";
@@ -23,6 +25,7 @@ import LandingPage  from "views/examples/LandingPage.js";
 import RegisterPage from "views/examples/RegisterPage.js";
 import LoginPage    from "views/examples/LoginPage.js";
 import ProfilePage  from "views/examples/ProfilePage.js";
+import SettingsPage from "views/SettingsPage.js";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -43,6 +46,8 @@ root.render(
         <Route path="/login-page"    element={<LoginPage />} />
         <Route path="/profile-page"  element={<ProfilePage />} />
         <Route path="/about-page"    element={<AboutPage />} />
+        <Route path="/terms"         element={<TermsPage />} />
+        <Route path="/privacy"       element={<PrivacyPage />} />
 
         {/* Protected routes — require authentication */}
         <Route
@@ -58,6 +63,16 @@ root.render(
           element={
             <ProtectedRoute>
               <GroundingPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Protected routes — require authentication */}
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <SettingsPage />
             </ProtectedRoute>
           }
         />

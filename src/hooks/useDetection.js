@@ -4,6 +4,10 @@
  * Streams webcam frames to the StrandSmart CV backend over WebSocket
  * and returns real-time detection state.
  *
+ * Parameters:
+ *   enabled     — when false, do not open WebSocket and do not start camera (Req 27.2, 28.2)
+ *   currentUser — when null, do not open WebSocket (Req 28.1, 28.2)
+ *
  * Returns:
  *   alert        — true when hand-to-face proximity alert is active
  *   confidence   — float 0–1
@@ -11,11 +15,12 @@
  *   isConnected  — true when the WebSocket is open
  *
  * Design notes:
- *   • WebSocket connection is attempted immediately on mount, independent of
- *     camera state. Camera is set up in parallel.
+ *   • WebSocket connection is attempted immediately on mount (when enabled and authenticated),
+ *     independent of camera state. Camera is set up in parallel.
  *   • All reconnect/interval logic uses refs so closures never go stale.
  *   • When discreetMode is true, frames are not sent but the socket stays open.
  *   • Gracefully handles backend offline — isConnected stays false, no throws.
+ *   • On sign-out (currentUser → null) or enabled → false, WebSocket is closed immediately.
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -27,7 +32,8 @@ const FRAME_MS        = Math.round(1000 / FPS);
 const JPEG_QUALITY    = 0.7;
 const RECONNECT_MS    = 3000;
 
-const useDetection = () => {
+// Requirements 27.2, 28.1, 28.2
+const useDetection = ({ enabled = true, currentUser = null } = {}) => {
   const { discreetMode } = usePrivacy();
 
   const [isConnected, setIsConnected] = useState(false);
@@ -49,7 +55,30 @@ const useDetection = () => {
     discreetRef.current = discreetMode;
   }, [discreetMode]);
 
+  // ── Sign-out / disabled cleanup effect (Req 28.4) ───────────────────────────
+  // Runs whenever enabled or currentUser changes. When either becomes falsy,
+  // immediately close the WebSocket and stop the frame interval so the camera
+  // and connection are torn down without waiting for the main effect to re-run.
   useEffect(() => {
+    if (!enabled || !currentUser) {
+      clearInterval(intervalRef.current);
+      clearTimeout(reconnectRef.current);
+      if (wsRef.current) {
+        wsRef.current.onclose = null; // prevent reconnect loop
+        wsRef.current.close();
+        wsRef.current = null;
+      }
+      setIsConnected(false);
+      setAlert(false);
+    }
+  }, [enabled, currentUser]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    // ── Guard: do not connect when disabled or unauthenticated (Req 27.2, 28.1, 28.2) ──
+    if (!enabled || !currentUser) {
+      return;
+    }
+
     mountedRef.current = true;
 
     // ── Off-screen video + canvas for frame capture ──────────────────────────
@@ -173,7 +202,7 @@ const useDetection = () => {
         video.srcObject = null;
       }
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [enabled, currentUser]); // re-run when auth state or enabled flag changes
 
   return { alert, confidence, zone, isConnected };
 };

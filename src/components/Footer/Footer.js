@@ -92,6 +92,14 @@ const Footer = () => {
             >
               Legal
             </h6>
+            <Nav className="flex-column mb-2">
+              <NavItem>
+                <NavLink tag={Link} to="/privacy">Privacy Policy</NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink tag={Link} to="/terms">Terms of Service</NavLink>
+              </NavItem>
+            </Nav>
             <p className="text-muted" style={{ fontSize: "0.82rem" }}>
               © {new Date().getFullYear()} Strandsmart. All rights reserved.
             </p>

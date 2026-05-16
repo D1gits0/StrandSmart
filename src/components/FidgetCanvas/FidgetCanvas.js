@@ -19,6 +19,7 @@ import React, { useRef, useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import useGroundingTimer from "hooks/useGroundingTimer";
+import { getDifficultyConfig } from "utils/difficultyConfig";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 const SS_GREEN      = "#00c864";
@@ -26,7 +27,6 @@ const SS_FOREST_BG  = "#060f0a";
 const FADE_RATE     = 0.006;    // ~2.5s fade at 60fps
 const LINE_WIDTH    = 3.5;
 const GLOW_BLUR     = 20;
-const PROXIMITY_R   = 40;       // px — distance to guide that triggers glow
 
 // ── Infinity path helpers ──────────────────────────────────────────────────────
 /**
@@ -49,14 +49,14 @@ const buildInfinityPath = (cx, cy, rx, ry, steps = 300) => {
 };
 
 /**
- * Returns true if point p is within PROXIMITY_R pixels of any guide point.
+ * Returns true if point p is within proximityR pixels of any guide point.
  * Checks every 5th guide point for performance.
  */
-const isNearGuide = (p, guidePts) => {
+const isNearGuide = (p, guidePts, proximityR) => {
   for (let i = 0; i < guidePts.length; i += 5) {
     const dx = p.x - guidePts[i].x;
     const dy = p.y - guidePts[i].y;
-    if (dx * dx + dy * dy < PROXIMITY_R * PROXIMITY_R) return true;
+    if (dx * dx + dy * dy < proximityR * proximityR) return true;
   }
   return false;
 };
@@ -88,16 +88,24 @@ const ProgressBar = ({ progress, secondsLeft, isComplete }) => (
 );
 
 // ── Main component ─────────────────────────────────────────────────────────────
-const FidgetCanvas = ({ onSessionComplete }) => {
-  const canvasRef    = useRef(null);
-  const strandsRef   = useRef([]);
-  const rafRef       = useRef(null);
-  const drawingRef   = useRef(false);
-  const guidePtsRef  = useRef([]);
-  const pulseRef     = useRef(0);       // 0–1, drives guide opacity pulse
-  const pulseDir     = useRef(1);
-  const nearGlowRef  = useRef(0);       // 0–1, background glow intensity
-  const sessionFired = useRef(false);
+const FidgetCanvas = ({ onSessionComplete, difficulty = "intermediate" }) => {
+  const { proximityR, pulseSpeed } = getDifficultyConfig(difficulty);
+
+  const canvasRef      = useRef(null);
+  const strandsRef     = useRef([]);
+  const rafRef         = useRef(null);
+  const drawingRef     = useRef(false);
+  const guidePtsRef    = useRef([]);
+  const pulseRef       = useRef(0);       // 0–1, drives guide opacity pulse
+  const pulseDir       = useRef(1);
+  const nearGlowRef    = useRef(0);       // 0–1, background glow intensity
+  const sessionFired   = useRef(false);
+  const pulseSpeedRef  = useRef(pulseSpeed);
+  const proximityRRef  = useRef(proximityR);
+
+  // Keep refs in sync with props so the RAF loop always uses current values
+  pulseSpeedRef.current = pulseSpeed;
+  proximityRRef.current = proximityR;
 
   const [isDrawing,  setIsDrawing]  = useState(false);
   const [nearGuide,  setNearGuide]  = useState(false);
@@ -156,7 +164,7 @@ const FidgetCanvas = ({ onSessionComplete }) => {
       }
 
       // ── Pulsing infinity guide ──
-      pulseRef.current += pulseDir.current * 0.008;
+      pulseRef.current += pulseDir.current * 0.008 * pulseSpeedRef.current;
       if (pulseRef.current >= 1) { pulseRef.current = 1; pulseDir.current = -1; }
       if (pulseRef.current <= 0) { pulseRef.current = 0; pulseDir.current =  1; }
 
@@ -238,7 +246,7 @@ const FidgetCanvas = ({ onSessionComplete }) => {
     if (strand) strand.points.push(pos);
 
     // Proximity check — update glow target
-    const near = isNearGuide(pos, guidePtsRef.current);
+    const near = isNearGuide(pos, guidePtsRef.current, proximityRRef.current);
     nearGlowRef.current = near ? Math.min(1, nearGlowRef.current + 0.15) : Math.max(0, nearGlowRef.current - 0.05);
     setNearGuide(near);
   }, []);

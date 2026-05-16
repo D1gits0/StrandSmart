@@ -21,6 +21,7 @@ import AuthCard from "components/AuthCard/AuthCard.js";
 import useParallaxSquares from "hooks/useParallaxSquares.js";
 import { auth, db } from "firebaseConfig";
 import { registerPage } from "data/content";
+import { EMAIL_REGEX } from "utils/emailValidation";
 
 const SQUARE_IDS_LARGE = [1, 2, 3, 4, 5, 6];
 
@@ -38,6 +39,8 @@ const RegisterPage = () => {
   const [agreed,      setAgreed]      = useState(false);
   const [loading,     setLoading]     = useState(false);
   const [submitError, setSubmitError] = useState(null);
+  const [emailError,  setEmailError]  = useState(null);
+  const [termsError,  setTermsError]  = useState(null);
 
   useEffect(() => {
     document.body.classList.toggle("register-page");
@@ -47,11 +50,19 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitError(null);
+    setEmailError(null);
+    setTermsError(null);
 
-    if (!agreed) {
-      setSubmitError("Please agree to the terms and conditions.");
+    if (!EMAIL_REGEX.test(email)) {
+      setEmailError("Please enter a valid email address.");
       return;
     }
+
+    if (!agreed) {
+      setTermsError("Please agree to the Terms of Service to continue.");
+      return;
+    }
+
     if (password.length < 6) {
       setSubmitError("Password must be at least 6 characters.");
       return;
@@ -89,7 +100,7 @@ const RegisterPage = () => {
       <ExamplesNavbar />
       <div className="wrapper">
         <div className="page-header">
-          <div className="page-header-image" />
+          <div className="page-header-image" style={{ background: "#0d2b1a" }} />
           <div className="content">
             <Container>
               <Row>
@@ -136,13 +147,23 @@ const RegisterPage = () => {
                           placeholder={form.fields.email.placeholder}
                           type={form.fields.email.type}
                           value={email}
-                          onChange={(e) => setEmail(e.target.value)}
+                          onChange={(e) => {
+                            setEmail(e.target.value);
+                            if (emailError && EMAIL_REGEX.test(e.target.value)) {
+                              setEmailError(null);
+                            }
+                          }}
                           onFocus={() => setEmailFocus(true)}
                           onBlur={() => setEmailFocus(false)}
                           style={{ borderRadius: "0 6px 6px 0" }}
                           required
                         />
                       </InputGroup>
+                      {emailError && (
+                        <p className="text-danger mt-1 mb-2" style={{ fontSize: "0.85rem" }}>
+                          {emailError}
+                        </p>
+                      )}
 
                       {/* Password */}
                       <InputGroup className={classnames({ "input-group-focus": passwordFocus })}>
@@ -169,12 +190,22 @@ const RegisterPage = () => {
                           <Input
                             type="checkbox"
                             checked={agreed}
-                            onChange={(e) => setAgreed(e.target.checked)}
+                            onChange={(e) => {
+                              setAgreed(e.target.checked);
+                              if (termsError && e.target.checked) {
+                                setTermsError(null);
+                              }
+                            }}
                           />
                           <span className="form-check-sign" />
-                          {form.termsLabel}
+                          I agree to the <Link to="/terms">Terms of Service</Link>
                         </Label>
                       </FormGroup>
+                      {termsError && (
+                        <p className="text-danger mt-1 mb-2" style={{ fontSize: "0.85rem" }}>
+                          {termsError}
+                        </p>
+                      )}
 
                       {submitError && (
                         <p className="text-danger mt-2" style={{ fontSize: "0.85rem" }}>

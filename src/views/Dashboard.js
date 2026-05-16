@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import { motion } from "framer-motion";
 import { Container, Row, Col, Button } from "reactstrap";
-import { auth }           from "firebaseConfig";
+import { auth, db }       from "firebaseConfig";
 import { useAuth }        from "context/AuthContext";
+import { usePrivacy }     from "context/PrivacyContext";
 import useUrgeLog         from "hooks/useUrgeLog";
-import useReflections     from "hooks/useReflections";
+import useDetection       from "hooks/useDetection";
 import { mindfulStreak }  from "utils/logAnalytics";
-import VibeInput          from "components/VibeInput/VibeInput";
+import CVStatusCard       from "components/CVStatusCard/CVStatusCard";
 import UrgeTracker        from "components/UrgeTracker/UrgeTracker";
 import InsightsSection    from "components/Insights/InsightsSection";
 import ReflectionHistory  from "components/ReflectionHistory/ReflectionHistory";
@@ -16,6 +18,7 @@ import LiveSupportFeed    from "components/LiveSupportFeed/LiveSupportFeed";
 import FloatingActionButton from "components/FAB/FloatingActionButton";
 import ExamplesNavbar     from "components/Navbars/ExamplesNavbar.js";
 import Footer             from "components/Footer/Footer.js";
+import OnboardingModal    from "components/OnboardingModal/OnboardingModal";
 
 // ── Shared glassmorphism card style ───────────────────────────────────────────
 export const glassCard = {
@@ -76,6 +79,8 @@ const formatLogDate = (date) => {
 const StreakBadge = ({ logs }) => {
   const streak = mindfulStreak(logs);
   const has    = streak.value !== null;
+  // Warm empty state message — never contains "no data" (Requirement 9.3, 9.4)
+  const emptyLabel = "Keep going — your streak starts with your next mindful moment.";
   return (
     <GlassCard style={{ border: has ? "1px solid rgba(0,200,100,0.3)" : glassCard.border }}>
       <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
@@ -89,7 +94,7 @@ const StreakBadge = ({ logs }) => {
         <div>
           <SectionLabel>Safe Streak</SectionLabel>
           <p style={{ fontWeight: 600, fontSize: "0.92rem", marginBottom: 0, lineHeight: 1.4 }}>
-            {streak.label}
+            {has ? streak.label : emptyLabel}
           </p>
         </div>
       </div>
@@ -104,7 +109,7 @@ const RecentLogs = ({ logs, loading }) => (
     {loading && <p className="text-muted" style={{ fontSize: "0.85rem" }}>Loading…</p>}
     {!loading && logs.length === 0 && (
       <p className="text-muted" style={{ fontSize: "0.85rem", marginBottom: 0 }}>
-        No urges logged yet.
+        Your urge patterns will appear here after a few logs. You're already doing the hard part by showing up.
       </p>
     )}
     {!loading && logs.length > 0 && (
@@ -137,7 +142,7 @@ const QuickActions = ({ navigate }) => (
   <Row style={{ margin: 0 }}>
     {[
       { icon: "tim-icons icon-spaceship", title: "Grounding", body: "Ride out an urge right now.", href: "/grounding", accent: true },
-      { icon: "tim-icons icon-book-bookmark", title: "Resources", body: "Articles and guides.", href: "/landing-page" },
+      { icon: "tim-icons icon-book-bookmark", title: "Reflections", body: "Write and review reflections.", href: "/reflections", accent: false },
     ].map(({ icon, title, body, href, accent }) => (
       <Col xs="6" key={title} style={{ paddingLeft: "0.4rem", paddingRight: "0.4rem" }}>
         <div
@@ -169,38 +174,53 @@ const QuickActions = ({ navigate }) => (
 // ── Dashboard ─────────────────────────────────────────────────────────────────
 const Dashboard = () => {
   const { currentUser }             = useAuth();
+  const { discreetMode, cvEnabled } = usePrivacy();
   const { recentLogs, logsLoading } = useUrgeLog();
-  const { saveReflection }          = useReflections();
   const navigate                    = useNavigate();
 
-  const [vibe,       setVibe]       = useState("");
-  const [noteSaving, setNoteSaving] = useState(false);
-  const [noteSaved,  setNoteSaved]  = useState(false);
+  // CV detection connection state (task 14.1)
+  const { isConnected } = useDetection({ enabled: cvEnabled, currentUser });
+
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Widget visibility preferences — default all true (task 14.3)
+  const [widgetPreferences, setWidgetPreferences] = useState({
+    urgeTracker:       true,
+    insightsChart:     true,
+    recentLogs:        true,
+    safeStreak:        true,
+    dailyInspiration:  true,
+    recentReflections: true,
+  });
+
+  // Check whether the user has completed onboarding; show modal if not
+  // Also fetch widgetPreferences from Firestore (task 14.3)
+  useEffect(() => {
+    if (!currentUser) return;
+    const checkOnboarding = async () => {
+      try {
+        const snap = await getDoc(doc(db, "users", currentUser.uid));
+        if (!snap.exists() || snap.data()?.onboardingComplete !== true) {
+          setShowOnboarding(true);
+        }
+        // Load widget preferences from Firestore if present
+        const prefs = snap.data()?.widgetPreferences;
+        if (prefs) {
+          setWidgetPreferences((prev) => ({ ...prev, ...prefs }));
+        }
+      } catch (err) {
+        // Non-blocking — if the check fails, skip the modal rather than blocking the dashboard
+        console.error("Dashboard: failed to check onboardingComplete", err);
+      }
+    };
+    checkOnboarding();
+  }, [currentUser]);
 
   const firstName = currentUser?.displayName?.split(" ")[0] ?? "there";
 
   const handleSignOut = async () => {
     try { await signOut(auth); navigate("/"); }
     catch (err) { console.error("Sign out error:", err); }
-  };
-
-  const handleSaveNote = async () => {
-    if (!vibe.trim()) return;
-    setNoteSaving(true);
-    try {
-      await saveReflection(vibe, false);
-      setVibe("");
-      setNoteSaved(true);
-      setTimeout(() => setNoteSaved(false), 3000);
-    } catch (err) { console.error("saveReflection error:", err); }
-    finally { setNoteSaving(false); }
-  };
-
-  const handleAfterUrgeLog = async () => {
-    if (!vibe.trim()) return;
-    try { await saveReflection(vibe, true); }
-    catch (err) { console.error("saveReflection (urge) error:", err); }
-    finally { setVibe(""); }
   };
 
   return (
@@ -256,6 +276,14 @@ const Dashboard = () => {
             </GlassCard>
           </motion.div>
 
+          {/* ── CV Status Card — full width, below welcome header (task 14.1) ── */}
+          {/* Hidden when discreetMode is active (Requirement 17.8) */}
+          {!discreetMode && (
+            <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.04 }}>
+              <CVStatusCard isConnected={isConnected} />
+            </motion.div>
+          )}
+
           {/* ── 2-column grid ── */}
           <Row>
 
@@ -270,41 +298,40 @@ const Dashboard = () => {
                 position: sticky + top: 90px keeps the Log Urge button
                 visible as the user scrolls through charts and history.
               */}
-              <motion.div
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.06 }}
-                style={{ position: "sticky", top: "90px", zIndex: 10 }}
-              >
-                <GlassCard padding="1.5rem 1.75rem">
-                  <VibeInput
-                    value={vibe}
-                    onChange={setVibe}
-                    onSaveNote={handleSaveNote}
-                    saving={noteSaving}
-                    saved={noteSaved}
-                  />
-                  <UrgeTracker note={vibe} onAfterLog={handleAfterUrgeLog} />
-                </GlassCard>
-              </motion.div>
+              {widgetPreferences.urgeTracker && (
+                <motion.div
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.06 }}
+                  style={{ position: "sticky", top: "90px", zIndex: 10 }}
+                >
+                  <GlassCard padding="1.5rem 1.75rem">
+                    <UrgeTracker />
+                  </GlassCard>
+                </motion.div>
+              )}
 
               {/* Charts — scrolls normally below the sticky tracker */}
-              <motion.div
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.14 }}
-              >
-                <InsightsSection logs={recentLogs} logsLoading={logsLoading} />
-              </motion.div>
+              {widgetPreferences.insightsChart && (
+                <motion.div
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.14 }}
+                >
+                  <InsightsSection logs={recentLogs} logsLoading={logsLoading} />
+                </motion.div>
+              )}
 
               {/* Recent urge log list */}
-              <motion.div
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.2 }}
-              >
-                <RecentLogs logs={recentLogs} loading={logsLoading} />
-              </motion.div>
+              {widgetPreferences.recentLogs && (
+                <motion.div
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.2 }}
+                >
+                  <RecentLogs logs={recentLogs} loading={logsLoading} />
+                </motion.div>
+              )}
 
             </Col>
 
@@ -315,37 +342,43 @@ const Dashboard = () => {
             <Col lg="4" style={{ paddingLeft: "0.75rem" }}>
 
               {/* Streak badge */}
-              <motion.div
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.1 }}
-              >
-                <StreakBadge logs={recentLogs} />
-              </motion.div>
+              {widgetPreferences.safeStreak && (
+                <motion.div
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.1 }}
+                >
+                  <StreakBadge logs={recentLogs} />
+                </motion.div>
+              )}
 
               {/* Reflection history */}
-              <motion.div
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.18 }}
-              >
-                <GlassCard>
-                  <ReflectionHistory />
-                </GlassCard>
-              </motion.div>
+              {widgetPreferences.recentReflections && (
+                <motion.div
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.18 }}
+                >
+                  <GlassCard>
+                    <ReflectionHistory />
+                  </GlassCard>
+                </motion.div>
+              )}
 
               {/* Live support feed — stacked vertically in right column */}
-              <motion.div
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.24 }}
-              >
-                <GlassCard>
-                  <LiveSupportFeed />
-                </GlassCard>
-              </motion.div>
+              {widgetPreferences.dailyInspiration && (
+                <motion.div
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.24 }}
+                >
+                  <GlassCard>
+                    <LiveSupportFeed />
+                  </GlassCard>
+                </motion.div>
+              )}
 
-              {/* Quick actions */}
+              {/* Quick actions — Reflections navigation card (task 14.2) */}
               <motion.div
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -376,6 +409,13 @@ const Dashboard = () => {
 
       {/* FAB — persists over all dashboard content */}
       <FloatingActionButton />
+
+      {/* Onboarding modal — shown once to first-time users */}
+      <OnboardingModal
+        isOpen={showOnboarding}
+        onComplete={() => setShowOnboarding(false)}
+        onDismiss={() => setShowOnboarding(false)}
+      />
     </>
   );
 };

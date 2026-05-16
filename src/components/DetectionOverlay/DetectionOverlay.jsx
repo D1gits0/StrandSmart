@@ -5,23 +5,30 @@
  * proximity alert, then opens the Grounding flow after 2 seconds.
  *
  * Behaviour:
- *   • Always renders a small debug badge (top-right) so you can see hook state
- *     without devtools. Remove the <DebugBadge> block when no longer needed.
- *   • isConnected: false  → only debug badge visible, no vignette
+ *   • isConnected: false  → only debug badge visible (dev only), no vignette
  *   • alert: true         → dark-green vignette fades in around screen edges
  *   • After 2 s of alert  → navigates to /grounding
- *   • Dismiss button      → suppresses alerts for 5 minutes
+ *   • Dismiss button      → suppresses alerts for `suppressDuration` minutes
+ *
+ * Guards:
+ *   • Returns null if currentUser is null (Req 28.1)
+ *   • Returns null if cvEnabled is false (Req 27.2)
+ *
+ * Props:
+ *   suppressDuration — suppression window in minutes (default 5) (Req 26.4)
  */
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import useDetection from "hooks/useDetection";
+import { useAuth } from "context/AuthContext";
+import { usePrivacy } from "context/PrivacyContext";
+import PrivacyBanner from "components/PrivacyBanner/PrivacyBanner";
 
 const GROUNDING_DELAY_MS = 2000;
-const SUPPRESS_MS        = 5 * 60 * 1000;
 
-// ── Debug badge — remove once confirmed working ───────────────────────────────
+// ── Debug badge — only rendered in development ────────────────────────────────
 const DebugBadge = ({ isConnected, alert, confidence, zone }) => (
   <div
     style={{
@@ -60,9 +67,35 @@ const DebugBadge = ({ isConnected, alert, confidence, zone }) => (
 );
 
 // ── Main component ────────────────────────────────────────────────────────────
-const DetectionOverlay = () => {
+const DetectionOverlay = ({ suppressDuration = 5 }) => {
+  const { currentUser } = useAuth();
+  const { cvEnabled } = usePrivacy();
+
+  // Req 28.1 — render nothing when not authenticated
+  // Req 27.2 — render nothing when CV is disabled
+  if (!currentUser || !cvEnabled) {
+    return null;
+  }
+
+  return (
+    <DetectionOverlayInner
+      suppressDuration={suppressDuration}
+      currentUser={currentUser}
+      cvEnabled={cvEnabled}
+    />
+  );
+};
+
+// Inner component — only rendered when currentUser and cvEnabled are truthy
+const DetectionOverlayInner = ({ suppressDuration, currentUser, cvEnabled }) => {
   const navigate = useNavigate();
-  const { alert: cvAlert, confidence, zone, isConnected } = useDetection();
+  const { alert: cvAlert, confidence, zone, isConnected } = useDetection({
+    enabled: cvEnabled,
+    currentUser,
+  });
+
+  // Req 26.4 — use suppressDuration prop (in minutes) instead of hardcoded constant
+  const suppressMs = suppressDuration * 60 * 1000;
 
   const [suppressed,   setSuppressed]   = useState(false);
   const [showVignette, setShowVignette] = useState(false);
@@ -80,8 +113,8 @@ const DetectionOverlay = () => {
     clearTimeout(groundingTimer.current);
     clearInterval(countdownTimer.current);
     clearTimeout(suppressTimer.current);
-    suppressTimer.current = setTimeout(() => setSuppressed(false), SUPPRESS_MS);
-  }, []);
+    suppressTimer.current = setTimeout(() => setSuppressed(false), suppressMs);
+  }, [suppressMs]);
 
   // ── Alert → vignette + grounding timer ───────────────────────────────────
   useEffect(() => {
@@ -133,13 +166,18 @@ const DetectionOverlay = () => {
 
   return (
     <>
-      {/* Debug badge — always visible so you can confirm hook state */}
-      <DebugBadge
-        isConnected={isConnected}
-        alert={cvAlert}
-        confidence={confidence}
-        zone={zone}
-      />
+      {/* Privacy banner — shown once on first camera activation (Req 12.1, 12.2, 12.3) */}
+      {isConnected && <PrivacyBanner />}
+
+      {/* Debug badge — only in development (Req code quality) */}
+      {process.env.NODE_ENV === "development" && (
+        <DebugBadge
+          isConnected={isConnected}
+          alert={cvAlert}
+          confidence={confidence}
+          zone={zone}
+        />
+      )}
 
       {/* Vignette */}
       <AnimatePresence>
@@ -208,7 +246,7 @@ const DetectionOverlay = () => {
             exit={{ opacity: 0, scale: 0.92 }}
             transition={{ duration: 0.25, delay: 0.2 }}
             onClick={handleDismiss}
-            aria-label="Dismiss alert for 5 minutes"
+            aria-label={`Dismiss alert for ${suppressDuration} minute${suppressDuration !== 1 ? "s" : ""}`}
             style={{
               position:      "fixed",
               bottom:        "2rem",
@@ -227,7 +265,7 @@ const DetectionOverlay = () => {
               letterSpacing: "0.04em",
             }}
           >
-            Dismiss (5 min)
+            Dismiss ({suppressDuration} min)
           </motion.button>
         )}
       </AnimatePresence>

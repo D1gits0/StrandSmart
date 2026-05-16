@@ -3,7 +3,6 @@ import { Container, Row } from "reactstrap";
 import { useSpring, animated } from "react-spring";
 import { useInView } from "react-intersection-observer";
 import Fade from "react-reveal/Fade";
-import { ReactTyped } from "react-typed";
 import { boom as boomContent } from "data/content";
 
 const Boom = () => {
@@ -29,11 +28,7 @@ const Boom = () => {
           <h1 style={{ fontSize: "7rem", fontWeight: 400, position: "relative" }}>
             <Fade>
               {boomContent.prefix}{" "}
-              <ReactTyped
-                strings={boomContent.typedStrings}
-                typeSpeed={boomContent.typeSpeed}
-                loop
-              />
+              {boomContent.typedStrings[0]}
             </Fade>
             <animated.div
               style={{

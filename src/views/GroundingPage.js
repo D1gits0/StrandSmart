@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Container, Row, Col, Card, CardBody, CardTitle, Button } from "reactstrap";
@@ -7,6 +7,8 @@ import Footer            from "components/Footer/Footer.js";
 import FidgetCanvas      from "components/FidgetCanvas/FidgetCanvas";
 import SensoryChallenge  from "components/Grounding/SensoryChallenge";
 import SuccessToast      from "components/Toast/SuccessToast";
+import DifficultySelector from "components/DifficultySelector/DifficultySelector";
+import GroundingCompletionScreen from "components/GroundingCompletionScreen/GroundingCompletionScreen";
 import useReflections    from "hooks/useReflections";
 
 const SS_GREEN = "#00c864";
@@ -18,6 +20,7 @@ const EXERCISES = [
     icon: "tim-icons icon-refresh-02",
     title: "Box Breathing",
     duration: "~3 min",
+    timerSeconds: 60,
     description: "Slow your nervous system with a simple 4-count breathing pattern.",
     steps: [
       "Breathe IN slowly for 4 counts.",
@@ -32,6 +35,7 @@ const EXERCISES = [
     icon: "tim-icons icon-tap-02",
     title: "Cold Water Reset",
     duration: "~1 min",
+    timerSeconds: 30,
     description: "A quick physical interrupt that shifts your body's focus away from the urge.",
     steps: [
       "Go to a sink or grab a cold drink.",
@@ -45,6 +49,7 @@ const EXERCISES = [
     icon: "tim-icons icon-heart-2",
     title: "Quick Body Scan",
     duration: "~2 min",
+    timerSeconds: 90,
     description: "Release tension you may not know you're holding.",
     steps: [
       "Close your eyes and take one slow breath.",
@@ -59,6 +64,34 @@ const EXERCISES = [
 // ── Collapsible exercise card ──────────────────────────────────────────────────
 const ExerciseCard = ({ exercise, index }) => {
   const [expanded, setExpanded] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState(exercise.timerSeconds);
+  const [timerDone, setTimerDone] = useState(false);
+
+  // Reset timer when card collapses; start countdown when expanded
+  useEffect(() => {
+    if (!expanded) {
+      setSecondsLeft(exercise.timerSeconds);
+      setTimerDone(false);
+      return;
+    }
+    if (timerDone) return;
+
+    const interval = setInterval(() => {
+      setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          setTimerDone(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [expanded, exercise.timerSeconds, timerDone]);
+
+  const progress = 1 - secondsLeft / exercise.timerSeconds;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -91,13 +124,40 @@ const ExerciseCard = ({ exercise, index }) => {
             <p className="text-muted" style={{ fontSize: "0.88rem", marginTop: "1rem", marginBottom: "0.75rem" }}>
               {exercise.description}
             </p>
-            <ol style={{ paddingLeft: "1.25rem", marginBottom: 0 }}>
+            <ol style={{ paddingLeft: "1.25rem", marginBottom: "1rem" }}>
               {exercise.steps.map((step, i) => (
                 <li key={i} style={{ fontSize: "0.88rem", marginBottom: "0.4rem", lineHeight: 1.5, opacity: 0.85 }}>
                   {step}
                 </li>
               ))}
             </ol>
+
+            {/* Progress bar + timer */}
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{ marginTop: "0.5rem" }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.35rem" }}>
+                <span style={{ fontSize: "0.7rem", opacity: 0.45, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                  {timerDone ? "Done — great work 🌿" : "Time remaining"}
+                </span>
+                <span style={{ fontSize: "0.78rem", fontWeight: 700, color: SS_GREEN }}>
+                  {timerDone ? "0s" : `${secondsLeft}s`}
+                </span>
+              </div>
+              <div style={{ height: 5, borderRadius: 3, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
+                <motion.div
+                  animate={{ width: `${progress * 100}%` }}
+                  transition={{ duration: 0.8, ease: "linear" }}
+                  style={{
+                    height: "100%",
+                    borderRadius: 3,
+                    background: `linear-gradient(90deg, #0d2b1a 0%, ${SS_GREEN} 100%)`,
+                    boxShadow: "0 0 8px rgba(0,200,100,0.45)",
+                  }}
+                />
+              </div>
+            </div>
           </motion.div>
         </CardBody>
       </Card>
@@ -158,10 +218,22 @@ const GroundingPage = () => {
   const [sessionLogged, setSessionLogged] = useState(false);
   const [toastVisible,  setToastVisible]  = useState(false);
   const [toastMessage,  setToastMessage]  = useState("");
+  const [showCompletion, setShowCompletion] = useState(false);
+  const [sessionStart,   setSessionStart]  = useState(null);
+
+  // Difficulty — read from localStorage, default to "intermediate"
+  const [difficulty, setDifficulty] = useState(
+    () => localStorage.getItem("ss_grounding_difficulty") || "intermediate"
+  );
+
+  const handleDifficultyChange = (v) => {
+    setDifficulty(v);
+  };
 
   const handleSessionComplete = useCallback(async () => {
     if (sessionLogged) return;
     setSessionLogged(true);
+    setShowCompletion(true);
     try {
       await saveReflection("Completed 1 minute of sensory grounding.", false);
     } catch (err) {
@@ -182,6 +254,9 @@ const GroundingPage = () => {
     setToastVisible(true);
     setTimeout(() => navigate("/dashboard"), 2200);
   };
+
+  // Compute session duration string for completion screen
+  const getSessionDuration = () => "1 minute";
 
   return (
     <>
@@ -243,8 +318,30 @@ const GroundingPage = () => {
                           <p className="text-muted" style={{ fontSize: "0.85rem", marginBottom: "1rem" }}>
                             Trace the glowing loop. Your hands stay busy, your mind stays present. 60 seconds earns a mindfulness badge.
                           </p>
-                          <FidgetCanvas onSessionComplete={handleSessionComplete} />
-                          {sessionLogged && (
+
+                          {/* Difficulty selector — shown before session starts */}
+                          {!sessionLogged && (
+                            <DifficultySelector
+                              value={difficulty}
+                              onChange={handleDifficultyChange}
+                            />
+                          )}
+
+                          {/* Completion screen overlay */}
+                          {showCompletion ? (
+                            <GroundingCompletionScreen
+                              duration={getSessionDuration()}
+                              onLogUrge={() => navigate("/log-urge")}
+                              onBackToDashboard={() => navigate("/dashboard")}
+                            />
+                          ) : (
+                            <FidgetCanvas
+                              onSessionComplete={handleSessionComplete}
+                              difficulty={difficulty}
+                            />
+                          )}
+
+                          {sessionLogged && !showCompletion && (
                             <motion.p
                               initial={{ opacity: 0, y: 6 }}
                               animate={{ opacity: 1, y: 0 }}
@@ -293,6 +390,7 @@ const GroundingPage = () => {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{   opacity: 0, x: 16 }}
                       transition={{ duration: 0.25 }}
+                      style={{ maxHeight: "60vh", overflowY: "auto" }}
                     >
                       {EXERCISES.map((ex, i) => (
                         <ExerciseCard key={ex.id} exercise={ex} index={i} />

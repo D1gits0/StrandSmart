@@ -18,6 +18,7 @@ import AuthCard from "components/AuthCard/AuthCard.js";
 import useParallaxSquares from "hooks/useParallaxSquares.js";
 import { auth } from "firebaseConfig";
 import { loginPage } from "data/content";
+import { EMAIL_REGEX } from "utils/emailValidation";
 
 const SQUARE_IDS_LARGE = [1, 2, 3, 4, 5, 6];
 
@@ -32,6 +33,7 @@ const LoginPage = () => {
   const [password,    setPassword]    = useState("");
   const [loading,     setLoading]     = useState(false);
   const [submitError, setSubmitError] = useState(null);
+  const [emailError,  setEmailError]  = useState(null);
 
   useEffect(() => {
     document.body.classList.toggle("login-page");
@@ -41,6 +43,12 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitError(null);
+
+    if (!EMAIL_REGEX.test(email)) {
+      setEmailError("Please enter a valid email address.");
+      return;
+    }
+
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -59,7 +67,7 @@ const LoginPage = () => {
       <ExamplesNavbar />
       <div className="wrapper">
         <div className="page-header">
-          <div className="page-header-image" />
+          <div className="page-header-image" style={{ background: "#0d2b1a" }} />
           <div className="content">
             <Container>
               <Row>
@@ -87,13 +95,23 @@ const LoginPage = () => {
                           placeholder={form.fields.email.placeholder}
                           type={form.fields.email.type}
                           value={email}
-                          onChange={(e) => setEmail(e.target.value)}
+                          onChange={(e) => {
+                            setEmail(e.target.value);
+                            if (emailError && EMAIL_REGEX.test(e.target.value)) {
+                              setEmailError(null);
+                            }
+                          }}
                           onFocus={() => setEmailFocus(true)}
                           onBlur={() => setEmailFocus(false)}
                           style={{ borderRadius: "0 6px 6px 0" }}
                           required
                         />
                       </InputGroup>
+                      {emailError && (
+                        <p className="text-danger mt-1 mb-2" style={{ fontSize: "0.85rem" }}>
+                          {emailError}
+                        </p>
+                      )}
 
                       {/* Password */}
                       <InputGroup className={classnames({ "input-group-focus": passwordFocus })}>
