@@ -20,7 +20,6 @@ import {
   doc,
   getDoc,
   setDoc,
-  updateDoc,
   deleteDoc,
   collection,
   getDocs,
@@ -32,6 +31,7 @@ import ExamplesNavbar from 'components/Navbars/ExamplesNavbar.js';
 import Footer from 'components/Footer/Footer.js';
 import OnboardingModal from 'components/OnboardingModal/OnboardingModal.jsx';
 import DifficultySelector from 'components/DifficultySelector/DifficultySelector.jsx';
+import { generateCSV, triggerCSVDownload } from 'utils/csvExport';
 // ── Shared styles ─────────────────────────────────────────────────────────────
 
 const SS_GREEN = '#00c864';
@@ -353,7 +353,6 @@ const DashboardSection = ({ currentUser }) => {
 // ── CSV export helper ─────────────────────────────────────────────────────────
 // Requirements: 15.1, 15.2, 15.3, 15.4
 // Pure functions extracted to utils/csvExport.js for testability
-import { generateCSV, triggerCSVDownload } from 'utils/csvExport';
 // ── Data Section ──────────────────────────────────────────────────────────────
 // Requirements: 25.1, 25.2, 25.3, 25.4, 25.5, 15.x, 14.x
 
